@@ -10,7 +10,7 @@ export default function HomeScreen() {
   useEffect(()=> {
     async function prepare() {
       try {
-        await new Promise(resolve => setTimeout(resolve, 2000));  
+        await new Promise(resolve => setTimeout(resolve, 4000));  
       }
       catch (e) {
         console.warn(e);
