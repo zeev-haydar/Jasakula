@@ -14,20 +14,21 @@ export default function App() {
   useEffect(()=> {
     async function prepare() {
       try {
-          
+        fadeOut();
+        // await new Promise(resolve => setTimeout(resolve, 3000));
       }
       catch (e) {
         console.warn(e);
       }
       finally {
+        
         setAppIsReady(true);
-        fadeOut();
       }
     }
 
     prepare();
   }, []);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new Animated.Value(1)).current;
 
   const fadeOut = () => {
     // Will change fadeAnim value to 0 in 3 seconds
