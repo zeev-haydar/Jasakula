@@ -2,6 +2,10 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Animated } from 'react-native';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 
+/**
+ * The Home Screen
+ * @returns 
+ */
 export default function HomeScreen() {
   
   return (

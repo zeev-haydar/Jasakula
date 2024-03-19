@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Animated, SafeAreaView } from 'react-native';
-import HomeScreen from '@/screens/HomeScreen';
+import { StyleSheet, Text, View, Animated} from 'react-native';
+import HomeScreen from './screens/HomeScreen';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font'
@@ -49,11 +49,11 @@ export default function App() {
     return null;
   }
   return (
-    <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>
+    <View style={styles.container} onLayout={onLayoutRootView}>
       <Animated.View style={{ opacity: fadeAnim }}>
     </Animated.View>
     <HomeScreen/>
-    </SafeAreaView>
+    </View>
     
     
   );

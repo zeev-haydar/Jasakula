@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Animated, SafeAreaView } from 'react-native';
-import HomeScreen from './screens/HomeScreen';
+import HomeScreen from './app/screens/HomeScreen';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font'
