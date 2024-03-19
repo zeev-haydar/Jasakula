@@ -6,7 +6,7 @@ export default function HomeScreen() {
   
   return (
     <View style={styles.container}>
-      <Text>Welcome to Jasakula!</Text>
+      <Text>Welcome to Jasakula! App for Freelancers</Text>
       <StatusBar style="auto" />
     </View>
   );
