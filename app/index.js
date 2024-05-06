@@ -1,9 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Animated} from 'react-native';
-import HomeScreen from './screens/HomeScreen';
+import HomeScreen from '../screens/HomeScreen';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font'
+import { Redirect } from 'expo-router';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -48,11 +49,12 @@ export default function App() {
   if (!appIsReady) {
     return null;
   }
+
   return (
     <View style={styles.container} onLayout={onLayoutRootView}>
       <Animated.View style={{ opacity: fadeAnim }}>
     </Animated.View>
-    <HomeScreen/>
+    <Redirect href={"/(tabs)/home"}/>
     </View>
     
     
