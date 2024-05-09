@@ -1,14 +1,32 @@
 import { StyleSheet, View, Animated, Image } from 'react-native';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Tabs, Redirect, Link, router } from "expo-router";
-import { SvgXml } from 'react-native-svg';
+import { Tabs, Redirect, Link, router, useNavigation } from "expo-router";
 
-const homeSvg:string = `
-<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 50 50" width="500px" height="500px">    <path d="M 25 1.0507812 C 24.7825 1.0507812 24.565859 1.1197656 24.380859 1.2597656 L 1.3808594 19.210938 C 0.95085938 19.550938 0.8709375 20.179141 1.2109375 20.619141 C 1.5509375 21.049141 2.1791406 21.129062 2.6191406 20.789062 L 4 19.710938 L 4 46 C 4 46.55 4.45 47 5 47 L 19 47 L 19 29 L 31 29 L 31 47 L 45 47 C 45.55 47 46 46.55 46 46 L 46 19.710938 L 47.380859 20.789062 C 47.570859 20.929063 47.78 21 48 21 C 48.3 21 48.589063 20.869141 48.789062 20.619141 C 49.129063 20.179141 49.049141 19.550938 48.619141 19.210938 L 25.619141 1.2597656 C 25.434141 1.1197656 25.2175 1.0507812 25 1.0507812 z M 35 5 L 35 6.0507812 L 41 10.730469 L 41 5 L 35 5 z"/></svg>
-`;
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import {faHome} from '@fortawesome/free-solid-svg-icons'
+import { faSearch, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faMessage } from '@fortawesome/free-solid-svg-icons';
 
 export default function NavBar() {
+    const [orderStatus, setOrderStatus] = useState('inactive');
+
+    const navigation = useNavigation();
+    
+    // Listen for changes in the tab status
+
+    const purchaseOrderImages = {
+        '#71BFD1': require('../assets/icons/purchase-order-71BFD1.png'),
+        '#434343': require('../assets/icons/purchase-order-434343.png')
+    }
+
+    const handleTabPressOrder = (tabName) => {
+        if (tabName === 'orders') {
+            setOrderStatus('active');
+        } else {
+            setOrderStatus('inactive');
+        } 
+    };
+
     return (
         <Tabs
             initialRouteName="Home"
@@ -24,13 +42,17 @@ export default function NavBar() {
                     href: "/home",
                     tabBarLabel: "Home",
                     title: "Home",
-                    // tabBarIcon: ({ }) => (
-                    //     <SvgXml
-                    //         width={100}
-                    //         height={100}
-                    //         xml={homeSvg}
-                    //     />
-                    // )
+                    tabBarIcon: ({color}) => (
+                        <FontAwesomeIcon icon={faHome}
+                            style={[styles.icon, { color: color } as any]}
+
+                        />
+                    )
+                }}
+                listeners={{
+                    tabPress: (e) => {
+                        handleTabPressOrder('home');
+                    }
                 }}
             />
             <Tabs.Screen
@@ -39,9 +61,71 @@ export default function NavBar() {
                     href: "/orders",
                     tabBarLabel: "Orders",
                     title: "Orders",
-                    tabBarIcon: ({ color, size }) => (
-                        <Image source={require("../assets/icons/purchase-order.png")} style={styles.icon} />
+                    tabBarIcon: ({color}) => (
+                        <Image source={purchaseOrderImages[color]} style={styles.icon} />
                     ),
+                }}
+                listeners={{
+                    tabPress: (e) => {
+                        handleTabPressOrder('orders');
+                    }
+                }}
+            />
+            <Tabs.Screen
+                name='search'
+                options={{
+                    href: "/search",
+                    tabBarLabel: "Search",
+                    title: "Search",
+                    tabBarIcon: ({color}) => (
+                        <FontAwesomeIcon icon={faSearch}
+                            style={[styles.icon, { color: color } as any]}
+
+                        />
+                    ),
+                }}
+                listeners={{
+                    tabPress: (e) => {
+                        handleTabPressOrder('search');
+                    }
+                }}
+            />
+            <Tabs.Screen
+                name='chats'
+                options={{
+                    href: "/chats",
+                    tabBarLabel: "Chats",
+                    title: "Chats",
+                    tabBarIcon: ({color}) => (
+                        <FontAwesomeIcon icon={faMessage}
+                            style={[styles.icon, { color: color } as any]}
+
+                        />
+                    ),
+                }}
+                listeners={{
+                    tabPress: (e) => {
+                        handleTabPressOrder('chats');
+                    }
+                }}
+            />
+            <Tabs.Screen
+                name='profile'
+                options={{
+                    href: "/profile",
+                    tabBarLabel: "Profile",
+                    title: "Profile",
+                    tabBarIcon: ({color}) => (
+                        <FontAwesomeIcon icon={faUser}
+                            style={[styles.icon, { color: color } as any]}
+
+                        />
+                    ),
+                }}
+                listeners={{
+                    tabPress: (e) => {
+                        handleTabPressOrder('profile');
+                    }
                 }}
             />
         </Tabs>

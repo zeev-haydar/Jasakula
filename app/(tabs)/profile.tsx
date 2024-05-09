@@ -4,13 +4,12 @@ import { StyleSheet } from 'react-native'
 import { Stack } from 'expo-router'
 
 const Page = () => {
-  const [opened, setOpened] = useState(false);
   
 
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ headerShown: true, title: "Orders" }} />
-      <Text>index of Orders page</Text>
+      <Stack.Screen options={{ headerShown: true, title: "Profile" }} />
+      <Text>index of Profile page</Text>
     </View>
   )
 }
