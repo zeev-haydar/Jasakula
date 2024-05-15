@@ -34,7 +34,13 @@
       }
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-font",
+        {
+          "fonts": ["./assets/fonts/DM_Sans/DMSans-VariableFont_opsz,wght.ttf"]
+        }
+      ]
     ]
   }
 }
