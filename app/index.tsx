@@ -41,7 +41,7 @@ export default function App() {
     // Will change fadeAnim value to 0 in 3 seconds
     Animated.timing(fadeAnim, {
       toValue: 0,
-      duration: 2000,
+      duration: 3000,
       useNativeDriver: true,
     }).start();
   };
@@ -55,6 +55,7 @@ export default function App() {
   if (!appIsReady) {
     return null;
   }
+  if (!fontsLoaded) return null
 
   return (
     <>
