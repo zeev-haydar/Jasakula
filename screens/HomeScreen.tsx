@@ -1,10 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Animated, Dimensions, FlatList, } from 'react-native';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import BigTitle from '../components/BigTitle';
 import Vector1 from '../assets/styling/vector_1.svg'
-import SearchBar from '../components/search_bar';
+import { SearchBar } from '../components/search_bar';
 import HomeCard from '../components/home_card';
 
 
@@ -15,6 +15,14 @@ import HomeCard from '../components/home_card';
  */
 export default function HomeScreen() {
   const user = "Danang";
+
+  const [text, setText] = React.useState("")
+
+  const router = useRouter();
+  const handleSearch = () => {
+    console.log("dienter")
+    router.push(`/search_result?keyword=${text}`);
+  };
 
   const itemData = [
     { id: 1, title: 'Web Dev' },
@@ -42,7 +50,7 @@ export default function HomeScreen() {
         <Vector1 />
       </View>
       <View style={styles.content}>
-        <SearchBar />
+        <SearchBar text={text} onChangeText={text => setText(text)} onSubmitEditing={handleSearch} />
         <Text style={styles.welcome_text}>Layanan Jasa Terpopuler</Text>
         <View style={styles.card_grid}>
           <FlatList
@@ -75,8 +83,15 @@ const styles = StyleSheet.create({
   background_vector: {
     zIndex: -1,
     position: 'absolute',
+    flex: 1,
+    justifyContent: 'flex-start',
     left: 0,
     top: 0,
+    // // maxHeight: 200,
+    // height: 250,
+    height: '100%',
+    width: '100%',
+    aspectRatio: undefined
 
   },
   content: {
