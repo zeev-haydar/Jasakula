@@ -1,19 +1,22 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native'
 import Vector1 from '../assets/styling/vector_1.svg'
 import React from 'react'
-import { Stack, useNavigationContainerRef, useNavigation, useRouter, useLocalSearchParams } from 'expo-router';
-import {SearchBar} from '../components/search_bar';
+import { Stack, useNavigationContainerRef, useNavigation, useRouter, useLocalSearchParams, Link } from 'expo-router';
+import { SearchBar } from '../components/search_bar';
 import CategoryElement from '../components/CategoryElement';
+import { useCategory } from '../providers/CategoryProvider';
+import CategoryElementWithLink from '@/components/CategoryElementWithLink';
 
 const SearchScreen = () => {
     const router = useRouter();
-    useLocalSearchParams
+    const catProvider = useCategory()
 
     const [text, setText] = React.useState("")
-    
+
     const handleSearch = () => {
         console.log("dienter")
-        router.push(`/search_result?keyword=${text}`);
+        catProvider.changeCategory(null)
+        router.push(`/search_result?query=${text}&category=false`);
     };
     return (
         <View style={styles.container}>
@@ -33,48 +36,48 @@ const SearchScreen = () => {
                 <Text style={styles.category_text}>Kategori</Text>
                 <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     <View style={styles.category_list}>
-                        <CategoryElement
-                            source={require('../assets/images/icons8-body-100.png')}
+                        <CategoryElementWithLink
+                            source={require('@/assets/images/icons8-body-100.png')}
                             title={"3D & Animasi"}
                             description={"Modeling, animasi, texturing, rigging, pencahayaan, rendering, compositing."}
                         />
-                        <CategoryElement
-                            source={require('../assets/images/icons8-video-100.png')}
+                        <CategoryElementWithLink
+                            source={require('@/assets/images/icons8-video-100.png')}
                             title={"Video Editing"}
                             description={"Modeling, animasi, texturing, rigging, pencahayaan, rendering, compositing."}
                         />
-                        <CategoryElement
-                            source={require('../assets/images/icons8-google-code-500.png')}
+                        <CategoryElementWithLink
+                            source={require('@/assets/images/icons8-google-code-500.png')}
                             title={"Web Development"}
                             description={"Modeling, animasi, texturing, rigging, pencahayaan, rendering, compositing."}
                         />
-                        <CategoryElement
-                            source={require('../assets/images/icons8-wacom-tablet-100.png')}
+                        <CategoryElementWithLink
+                            source={require('@/assets/images/icons8-wacom-tablet-100.png')}
                             title={"Desain Logo"}
                             description={"Modeling, animasi, texturing, rigging, pencahayaan, rendering, compositing."}
                         />
-                        <CategoryElement
-                            source={require('../assets/images/icons8-exhibitor-100.png')}
+                        <CategoryElementWithLink
+                            source={require('@/assets/images/icons8-exhibitor-100.png')}
                             title={"Digital Marketing"}
                             description={"Modeling, animasi, texturing, rigging, pencahayaan, rendering, compositing."}
                         />
-                        <CategoryElement
-                            source={require('../assets/images/icons8-cash-in-hand-100.png')}
+                        <CategoryElementWithLink
+                            source={require('@/assets/images/icons8-cash-in-hand-100.png')}
                             title={"Akuntansi & Keuangan"}
                             description={"Modeling, animasi, texturing, rigging, pencahayaan, rendering, compositing."}
                         />
-                        <CategoryElement
-                            source={require('../assets/images/icons8-multiple-devices-100.png')}
+                        <CategoryElementWithLink
+                            source={require('@/assets/images/icons8-multiple-devices-100.png')}
                             title={"Servis Barang Elektronik"}
                             description={"Modeling, animasi, texturing, rigging, pencahayaan, rendering, compositing."}
                         />
-                        <CategoryElement
-                            source={require('../assets/images/icons8-yoga-100.png')}
+                        <CategoryElementWithLink
+                            source={require('@/assets/images/icons8-yoga-100.png')}
                             title={"Gaya Hidup"}
                             description={"Modeling, animasi, texturing, rigging, pencahayaan, rendering, compositing."}
                         />
-                        <CategoryElement
-                            source={require('../assets/images/icons8-consultation-100.png')}
+                        <CategoryElementWithLink
+                            source={require('@/assets/images/icons8-consultation-100.png')}
                             title={"Jasa Konsultasi"}
                             description={"Modeling, animasi, texturing, rigging, pencahayaan, rendering, compositing."}
                         />
@@ -107,6 +110,7 @@ const styles = StyleSheet.create({
         // marginLeft: 17,
         // marginRight: 17,
         // alignItems: 'center'
+        width: '100%'
 
     },
     category_text: {
@@ -125,9 +129,11 @@ const styles = StyleSheet.create({
     },
     category_list: {
         flex: 1,
+        width: '100%'
     },
     scrollViewContent: {
         flexGrow: 1,
+        width: '100%'
     },
 })
 

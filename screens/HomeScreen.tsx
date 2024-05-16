@@ -6,6 +6,7 @@ import BigTitle from '../components/BigTitle';
 import Vector1 from '../assets/styling/vector_1.svg'
 import { SearchBar } from '../components/search_bar';
 import HomeCard from '../components/home_card';
+import { useCategory } from '@/providers/CategoryProvider';
 
 
 
@@ -15,13 +16,16 @@ import HomeCard from '../components/home_card';
  */
 export default function HomeScreen() {
   const user = "Danang";
+  const catProvider = useCategory()
 
   const [text, setText] = React.useState("")
 
   const router = useRouter();
   const handleSearch = () => {
-    console.log("dienter")
-    router.push(`/search_result?keyword=${text}`);
+    console.log("dienter");
+    catProvider.changeCategory(null);
+    router.push(`/search_result?query=${text}&category=false`);
+    
   };
 
   const itemData = [

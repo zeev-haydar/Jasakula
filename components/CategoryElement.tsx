@@ -10,7 +10,9 @@ const CategoryElement = ({ source, title, description }) => {
       </View>
       <View style={styles.info}>
         <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description}>{description}</Text>
+        <View style={styles.textContainer}>
+          <Text style={styles.description}>{description}</Text>
+        </View>
       </View>
 
     </View>
@@ -28,8 +30,8 @@ const styles = StyleSheet.create({
 
   },
   image_container: {
-    width: 80,
-    height: 80,
+    width: 40,
+    height: 40,
     marginRight: 10,
   },
   image: {
@@ -47,10 +49,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'DM-Sans',
   },
+  textContainer: {
+    flexWrap: 'wrap',
+    flexDirection: 'row', 
+  },
   description: {
     fontSize: 14,
-    color: '#666',
+    color: '#9F9F9F',
     fontFamily: 'DM-Sans',
+
   },
 
 })
