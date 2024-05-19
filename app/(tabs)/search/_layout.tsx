@@ -17,7 +17,9 @@ const _layout = () => {
           fontSize: 25
         },
       }}
-    />
+    >
+      
+    </Stack>
 
   )
 }

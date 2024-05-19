@@ -1,6 +1,6 @@
 
 import React from 'react'
-import SearchResultScreen from '../../screens/SearchResultScreen'
+import SearchResultScreen from '@/screens/SearchResultScreen'
 
 const index = () => {
   return (

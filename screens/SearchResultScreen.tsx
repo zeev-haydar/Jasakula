@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image } from 'react-native'
+import { View, Text, StyleSheet, Image, BackHandler } from 'react-native'
 import React from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Stack } from 'expo-router'
@@ -6,6 +6,9 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { Button } from 'react-native-paper'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { useCategory } from '@/providers/CategoryProvider'
+import SearchResultCard from '@/components/SearchResultCard'
+import Jasa from '@/models/Jasa'
+import { useFocusEffect } from 'expo-router';
 
 
 
@@ -16,14 +19,30 @@ const SearchResultScreen = () => {
     const title: string = categoryContext ? categoryContext.title : '';
     const description: string = categoryContext ? categoryContext.description : '';
     const image: any = categoryContext ? categoryContext.image : null;
+    const templateJasa = Jasa.CreateTemplateJasa();
 
-    // console.log({ title, description, image });
+    useFocusEffect(
+        React.useCallback(() => {
+            const onBackPress = () => {
+                if (router.canGoBack()) {
+                    router.back;
+                    return true;
+                }
+                return false;
+            };
+
+            BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+            return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+        }, [router])
+    );
+
 
 
     return (
         <View style={styles.container}>
             <Stack.Screen options={{
-                headerShown: true, title: `${title ? title:query}`,
+                headerShown: true, title: `${title ? title : query}`,
                 headerTitleStyle: { fontFamily: 'DM-Sans', fontWeight: 'bold', fontSize: 25 },
                 headerLeft: () => (
                     <Button onPress={() => router.replace('/search')} style={styles.button_container}>
@@ -35,18 +54,27 @@ const SearchResultScreen = () => {
             <View style={styles.content}>
 
                 {category === 'true' ? (
-                    <View style={styles.category_info}>
-                        <View style={styles.image_container}>
-                            <Image source={image} style={styles.image} resizeMode='cover' />
+                    <View>
+                        <View style={styles.category_info}>
+                            <View style={styles.image_container}>
+                                <Image source={image} style={styles.image} resizeMode='cover' />
 
+                            </View>
+                            <Text style={styles.category_title}>{title}</Text>
+                            <Text style={[styles.text, { fontSize: 10, textAlign: 'center', color: "#9f9f9f" }]}>{description}</Text>
                         </View>
-                        <Text style={styles.category_title}>{title}</Text>
-                        <Text style={[styles.text, {fontSize: 10, textAlign: 'center', color: "#9f9f9f"}]}>{description}</Text>
-                        
+
                     </View>
+
                 ) : <Text>Search Result for {query}</Text>
                 }
-                
+                <View style={styles.search_results}>
+                    <SearchResultCard
+                        source={require('@/assets/images/placeholder-design.png')}
+                        jasa={templateJasa}
+                    />
+                </View>
+
             </View>
 
         </View>
@@ -57,7 +85,7 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fff',
         flex: 1,
-
+        justifyContent: 'center',
 
     },
     background_vector: {
@@ -90,9 +118,8 @@ const styles = StyleSheet.create({
         color: '#000',
     },
     category_info: {
-        flex: 1,
         alignItems: 'center',
-        maxHeight: 150
+        marginBottom: 20
     },
     scrollViewContent: {
         flexGrow: 1,
@@ -112,6 +139,12 @@ const styles = StyleSheet.create({
     image: {
         width: '100%',
         height: '100%',
+    },
+    search_results: {
+        marginHorizontal: 4,
+        flex: 1,
+        flexDirection: 'column'
+
     },
 })
 export default SearchResultScreen

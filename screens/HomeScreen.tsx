@@ -2,7 +2,6 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Animated, Dimensions, FlatList, } from 'react-native';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { Stack, useRouter } from 'expo-router';
-import BigTitle from '../components/BigTitle';
 import Vector1 from '../assets/styling/vector_1.svg'
 import { SearchBar } from '../components/search_bar';
 import HomeCard from '../components/home_card';

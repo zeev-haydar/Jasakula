@@ -2,7 +2,9 @@
   "compilerOptions": {
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "typeRoots": ["./types"],
   },
-  "extends": "expo/tsconfig.base"
+  "extends": "expo/tsconfig.base",
+  
 }

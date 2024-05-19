@@ -34,7 +34,8 @@ export default function NavBar() {
                 tabBarActiveTintColor: '#71BFD1',
                 tabBarInactiveTintColor: '#434343',
                 tabBarLabelStyle: {fontFamily: 'DM-Sans'},
-                tabBarShowLabel: false
+                tabBarShowLabel: false,
+                headerShown: false
             }}
 
         >
