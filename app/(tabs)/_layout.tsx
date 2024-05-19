@@ -1,5 +1,5 @@
-import {Tabs, Redirect} from "expo-router";
 import NavBar from "../../components/navbar";
+import React from "react";
 
 export default function TabsLayout() {
     return (

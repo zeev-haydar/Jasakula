@@ -2,10 +2,12 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Animated, Dimensions, FlatList, } from 'react-native';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { Stack, useRouter } from 'expo-router';
-import BigTitle from '../components/BigTitle';
 import Vector1 from '../assets/styling/vector_1.svg'
 import { SearchBar } from '../components/search_bar';
 import HomeCard from '../components/home_card';
+import { useCategory } from '@/providers/CategoryProvider';
+import {Tabs, Redirect, useFocusEffect, useRootNavigationState, useNavigationContainerRef} from "expo-router";
+import { BackHandler } from "react-native";
 
 
 
@@ -14,14 +16,29 @@ import HomeCard from '../components/home_card';
  * @returns 
  */
 export default function HomeScreen() {
+  useFocusEffect(
+    React.useCallback(() => {
+        const onBackPress = () => {
+            BackHandler.exitApp();
+            return true;
+        };
+
+        BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+        return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [])
+);
   const user = "Danang";
+  const catProvider = useCategory()
 
   const [text, setText] = React.useState("")
 
   const router = useRouter();
   const handleSearch = () => {
-    console.log("dienter")
-    router.push(`/search_result?keyword=${text}`);
+    console.log("dienter");
+    catProvider.changeCategory(null);
+    router.push(`/search_result?query=${text}&category=false`);
+    
   };
 
   const itemData = [
