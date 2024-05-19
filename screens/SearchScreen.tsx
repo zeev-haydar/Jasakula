@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, ScrollView} from 'react-native'
 import Vector1 from '../assets/styling/vector_1.svg'
 import React from 'react'
 import { Stack, useNavigationContainerRef, useNavigation, useRouter, useLocalSearchParams, Link } from 'expo-router';
@@ -6,6 +6,7 @@ import { SearchBar } from '../components/search_bar';
 import CategoryElement from '../components/CategoryElement';
 import { useCategory } from '../providers/CategoryProvider';
 import CategoryElementWithLink from '@/components/CategoryElementWithLink';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SearchScreen = () => {
     const router = useRouter();
@@ -16,10 +17,10 @@ const SearchScreen = () => {
     const handleSearch = () => {
         console.log("dienter")
         catProvider.changeCategory(null)
-        router.push(`/search_result?query=${text}&category=false`);
+        router.push(`/search/search_result?query=${text}&category=false`);
     };
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Stack.Screen options={{
                 headerShown: false, headerTransparent: true, title: `Cari Jasa`,
                 headerTitleStyle: { fontFamily: 'DM-Sans', fontWeight: 'bold', fontSize: 25 }
@@ -84,7 +85,7 @@ const SearchScreen = () => {
                     </View>
                 </ScrollView>
             </View>
-        </View>
+        </SafeAreaView>
     )
 }
 
@@ -92,7 +93,7 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fff',
         flex: 1,
-        paddingTop: 50
+        paddingTop: 20
 
 
     },

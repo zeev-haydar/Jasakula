@@ -6,6 +6,8 @@ import Vector1 from '../assets/styling/vector_1.svg'
 import { SearchBar } from '../components/search_bar';
 import HomeCard from '../components/home_card';
 import { useCategory } from '@/providers/CategoryProvider';
+import {Tabs, Redirect, useFocusEffect, useRootNavigationState, useNavigationContainerRef} from "expo-router";
+import { BackHandler } from "react-native";
 
 
 
@@ -14,6 +16,18 @@ import { useCategory } from '@/providers/CategoryProvider';
  * @returns 
  */
 export default function HomeScreen() {
+  useFocusEffect(
+    React.useCallback(() => {
+        const onBackPress = () => {
+            BackHandler.exitApp();
+            return true;
+        };
+
+        BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+        return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [])
+);
   const user = "Danang";
   const catProvider = useCategory()
 

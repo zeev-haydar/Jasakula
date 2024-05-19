@@ -9,6 +9,7 @@ export default class Jasa {
     harga: number;
     jenis: string;
     penjual: Penjual;
+    
 
     constructor(id: string, nama: string, deskripsi: string, rating: number, harga: number, jenis: string, penjual: Penjual){
         this.id = id;

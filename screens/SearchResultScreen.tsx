@@ -9,6 +9,7 @@ import { useCategory } from '@/providers/CategoryProvider'
 import SearchResultCard from '@/components/SearchResultCard'
 import Jasa from '@/models/Jasa'
 import { useFocusEffect } from 'expo-router';
+import SearchResultCardWithLink from '@/components/SearchResultCardWithLink'
 
 
 
@@ -25,7 +26,7 @@ const SearchResultScreen = () => {
         React.useCallback(() => {
             const onBackPress = () => {
                 if (router.canGoBack()) {
-                    router.back;
+                    router.replace("/search");
                     return true;
                 }
                 return false;
@@ -69,7 +70,7 @@ const SearchResultScreen = () => {
                 ) : <Text>Search Result for {query}</Text>
                 }
                 <View style={styles.search_results}>
-                    <SearchResultCard
+                    <SearchResultCardWithLink
                         source={require('@/assets/images/placeholder-design.png')}
                         jasa={templateJasa}
                     />

@@ -1,16 +1,16 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, Pressable } from 'react-native'
 import React from 'react'
 import { useCategory } from '@/providers/CategoryProvider'
 import { Link } from 'expo-router';
 import CategoryElement from './CategoryElement';
 
-const CategoryElementWithLink = ({source, title,description}) => {
+const CategoryElementWithLink = ({ source, title, description }) => {
 
     const catProvider = useCategory();
     return (
         <Link push href={
             {
-                pathname: "/search_result",
+                pathname: "/search/search_result",
                 params: {
                     query: title.toLowerCase().replace(/\s/g, ''),
                     category: true,
@@ -23,12 +23,17 @@ const CategoryElementWithLink = ({source, title,description}) => {
                 source
             )
             }
+            style={{ width: '100%', flexWrap: 'wrap', }}
+            asChild
         >
-            <CategoryElement
-                source={source}
-                title={title}
-                description={description}
-            />
+            <Pressable>
+                <CategoryElement
+                    source={source}
+                    title={title}
+                    description={description}
+                />
+            </Pressable>
+
         </Link>
     )
 }
