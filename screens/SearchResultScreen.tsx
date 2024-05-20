@@ -10,6 +10,7 @@ import SearchResultCard from '@/components/SearchResultCard'
 import Jasa from '@/models/Jasa'
 import { useFocusEffect } from 'expo-router';
 import SearchResultCardWithLink from '@/components/SearchResultCardWithLink'
+import { useJasa } from '@/providers/JasaProvider'
 
 
 
@@ -20,13 +21,12 @@ const SearchResultScreen = () => {
     const title: string = categoryContext ? categoryContext.title : '';
     const description: string = categoryContext ? categoryContext.description : '';
     const image: any = categoryContext ? categoryContext.image : null;
-    const templateJasa = Jasa.CreateTemplateJasa();
-
+    const templateJasa = Jasa.CreateTemplateJasa(require('@/assets/images/placeholder-design.png'));
     useFocusEffect(
         React.useCallback(() => {
             const onBackPress = () => {
                 if (router.canGoBack()) {
-                    router.replace("/search");
+                    router.back()
                     return true;
                 }
                 return false;
@@ -46,7 +46,7 @@ const SearchResultScreen = () => {
                 headerShown: true, title: `${title ? title : query}`,
                 headerTitleStyle: { fontFamily: 'DM-Sans', fontWeight: 'bold', fontSize: 25 },
                 headerLeft: () => (
-                    <Button onPress={() => router.replace('/search')} style={styles.button_container}>
+                    <Button onPress={() => router.back()} style={styles.button_container}>
                         <FontAwesomeIcon icon={faArrowLeft} color='#fff' size={20} style={{ justifyContent: 'center', alignItems: 'center' }} />
                     </Button>
 
