@@ -22,11 +22,13 @@ const JasaScreen = () => {
     const nama = jasaContext ? jasaContext.nama : '';
     const rating = jasaContext ? jasaContext.rating : '';
     const deskripsi = jasaContext ? jasaContext.deskripsi : '';
-    const imagePath = jasaContext.imagePath ? jasaContext.imagePath : require('@/assets/images/placeholder-design.png'); // use template image
+    const imagePath = jasaContext && jasaContext.imagePath ? jasaContext.imagePath : require('@/assets/images/placeholder-design.png'); // use template image
     const penjual = jasaContext ? jasaContext.penjual.pengguna.fullName : '';
     const harga = jasaContext ? jasaContext.harga : '';
     const screenWidth = Dimensions.get('window').width;
-    // Set image container height proportional to screen width (e.g., 16:9 ratio)
+    const jumlahUlasan = jasaContext && jasaContext.ulasan ? jasaContext.ulasan.length : 0;
+    
+    // Set image container height proportional to screen width (16:9 ratio)
     const imageHeight = (9 / 16) * screenWidth;
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -79,7 +81,7 @@ const JasaScreen = () => {
                             <Text style={[styles.text, { fontSize: 10, color: '#fff', fontWeight: 'bold' }]}>Lanjutkan</Text>
                         </Button>
                         <View style={styles.ulasan}>
-                            <Text style={[styles.text, styles.ulasanHeader]}>20 Ulasan</Text>
+                            <Text style={[styles.text, styles.ulasanHeader]}>{jumlahUlasan} Ulasan</Text>
                             <Pressable>
                                 <Text style={[styles.text, styles.lihatSemua]}>Lihat semua</Text>
                             </Pressable>
@@ -88,7 +90,6 @@ const JasaScreen = () => {
 
                 </View>
             </ScrollView>
-
         </SafeAreaView>
 
     )

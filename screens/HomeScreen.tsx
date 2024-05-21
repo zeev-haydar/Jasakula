@@ -1,13 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Animated, Dimensions, FlatList, } from 'react-native';
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import { Stack, useRouter } from 'expo-router';
 import Vector1 from '../assets/styling/vector_1.svg'
 import { SearchBar } from '../components/search_bar';
 import HomeCard from '../components/home_card';
 import { useCategory } from '@/providers/CategoryProvider';
-import {Tabs, Redirect, useFocusEffect, useRootNavigationState, useNavigationContainerRef} from "expo-router";
+import { Tabs, Redirect, useFocusEffect, useRootNavigationState, useNavigationContainerRef } from "expo-router";
 import { BackHandler } from "react-native";
+import { supabase } from '@/utils/supabase';
 
 
 
@@ -16,18 +17,6 @@ import { BackHandler } from "react-native";
  * @returns 
  */
 export default function HomeScreen() {
-  useFocusEffect(
-    React.useCallback(() => {
-        const onBackPress = () => {
-            BackHandler.exitApp();
-            return true;
-        };
-
-        BackHandler.addEventListener('hardwareBackPress', onBackPress);
-
-        return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-    }, [])
-);
   const user = "Danang";
   const catProvider = useCategory()
 
@@ -37,9 +26,23 @@ export default function HomeScreen() {
   const handleSearch = () => {
     console.log("dienter");
     catProvider.changeCategory(null);
-    router.push(`/search_result?query=${text}&category=false`);
-    
+    router.push(`/search/search_result?query=${text}&category=false`);
+
   };
+
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        BackHandler.exitApp();
+        return true;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [])
+  );
 
   const itemData = [
     { id: 1, title: 'Web Dev' },

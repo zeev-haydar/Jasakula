@@ -1,5 +1,6 @@
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
 import Penjual from "./Penjual";
+import Ulasan from "./Ulasan";
 
 export default class Jasa {
     id: string;
@@ -10,9 +11,10 @@ export default class Jasa {
     jenis: string;
     penjual: Penjual;
     imagePath: any;
+    ulasan: Ulasan[];
     
 
-    constructor(id: string, nama: string, deskripsi: string, rating: number, harga: number, jenis: string, penjual: Penjual, imagePath?: any){
+    constructor(id: string, nama: string, deskripsi: string, rating: number, harga: number, jenis: string, penjual: Penjual, imagePath?: any, ulasan?: Ulasan[]){
         this.id = id;
         this.nama = nama;
         this.deskripsi = deskripsi;
@@ -21,6 +23,7 @@ export default class Jasa {
         this.jenis = jenis;
         this.penjual = penjual;
         this.imagePath = imagePath;
+        this.ulasan = ulasan;
     }
 
     static CreateTemplateJasa(imagePath?: any): Jasa{

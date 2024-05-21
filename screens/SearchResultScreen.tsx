@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Image, BackHandler } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Stack } from 'expo-router'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
@@ -11,16 +11,66 @@ import Jasa from '@/models/Jasa'
 import { useFocusEffect } from 'expo-router';
 import SearchResultCardWithLink from '@/components/SearchResultCardWithLink'
 import { useJasa } from '@/providers/JasaProvider'
+import { supabase } from '@/utils/supabase'
+import { PostgrestSingleResponse } from '@supabase/supabase-js'
+import { printAllElements } from '@/utils/formatting'
+import Penjual from '@/models/Penjual'
+import Pengguna from '@/models/Pengguna'
+import Ulasan from '@/models/Ulasan'
 
 
 
 const SearchResultScreen = () => {
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const { query, category } = useLocalSearchParams();
     const router = useRouter();
     const { category: categoryContext } = useCategory();
     const title: string = categoryContext ? categoryContext.title : '';
     const description: string = categoryContext ? categoryContext.description : '';
     const image: any = categoryContext ? categoryContext.image : null;
+    // console.log({query, category})
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                let response: PostgrestSingleResponse<{ jasa: any[]; kategori: { name: any }[] }[]>;
+                if (category === 'true') {
+                    response = await supabase
+                        .from('jasakategori')
+                        .select(`
+                            jasa(*,
+                                ulasan(*,
+                                    pengguna: pengguna_id(id, full_name)
+                                ),
+                                penjual: penjual_id(
+                                    *,
+                                    pengguna: pengguna_id(id, full_name)
+                                )
+                            ),
+                            kategori!inner(
+                                name
+                            )`).eq("kategori.name", query);
+                }
+                if (response.error) {
+                    console.log(response.error)
+                    throw response.error
+                };
+                setData(response.data);
+                printAllElements(response.data);
+            } catch (error) {
+                setError(error.message);
+            } finally {
+                setLoading(false);
+            }
+
+        };
+
+        fetchData();
+    }, [query, category])
+
     const templateJasa = Jasa.CreateTemplateJasa(require('@/assets/images/placeholder-design.png'));
     useFocusEffect(
         React.useCallback(() => {
@@ -44,7 +94,7 @@ const SearchResultScreen = () => {
         <View style={styles.container}>
             <Stack.Screen options={{
                 headerShown: true, title: `${title ? title : query}`,
-                headerTitleStyle: { fontFamily: 'DM-Sans', fontWeight: 'bold', fontSize: 25 },
+                headerTitleStyle: { fontFamily: 'DM-Sans', fontWeight: 'bold', fontSize: 25},
                 headerLeft: () => (
                     <Button onPress={() => router.back()} style={styles.button_container}>
                         <FontAwesomeIcon icon={faArrowLeft} color='#fff' size={20} style={{ justifyContent: 'center', alignItems: 'center' }} />
@@ -70,10 +120,45 @@ const SearchResultScreen = () => {
                 ) : <Text>Search Result for {query}</Text>
                 }
                 <View style={styles.search_results}>
-                    <SearchResultCardWithLink
-                        source={require('@/assets/images/placeholder-design.png')}
-                        jasa={templateJasa}
-                    />
+                {loading ? (
+                        <Text style={[styles.text, { fontSize: 15, textAlign: 'center', color: "#9f9f9f" }]}>Loading...</Text>
+                    ) : error ? (
+                        <Text style={[styles.text, { fontSize: 15, textAlign: 'center', color: "#9f9f9f" }]}>{error}</Text>
+                    ) : data.length === 0 ? (
+                        <Text style={[styles.text, { fontSize: 15, textAlign: 'center', color: "#9f9f9f" }]}>Result not found</Text>
+                    ) : (
+                        data.map((item, index) => {
+                            const jasa = item.jasa;
+                            if (jasa) {
+                                const penjual = jasa.penjual || {};
+                                const pengguna = penjual.pengguna || {};
+                                return (
+                                    <SearchResultCardWithLink
+                                        key={index}
+                                        source={require('@/assets/images/placeholder-design.png')}
+                                        jasa={new Jasa(
+                                            jasa.id,
+                                            jasa.nama,
+                                            jasa.deskripsi,
+                                            jasa.rating,
+                                            jasa.harga,
+                                            jasa.jenis,
+                                            new Penjual(
+                                                penjual.id,
+                                                new Pengguna(pengguna.id, pengguna.full_name, null, null)
+                                            ),
+                                            null,
+                                            jasa.ulasan.map((item: { id: string; sent_at: string; content: string; rating: number; pengguna: { id: string; full_name: string } })=>{
+                                                new Ulasan(item.id, item.sent_at, item.content, item.rating, new Pengguna(item.pengguna.id, item.pengguna.full_name, null, null))
+                                            }
+                                            )
+                                        )}
+                                    />
+                                );
+                            }
+                            return null;
+                        })
+                    )}
                 </View>
 
             </View>
@@ -144,7 +229,8 @@ const styles = StyleSheet.create({
     search_results: {
         marginHorizontal: 4,
         flex: 1,
-        flexDirection: 'column'
+        flexDirection: 'column',
+        alignItems: 'center'
 
     },
 })
