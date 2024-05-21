@@ -12,7 +12,7 @@ const CategoryElementWithLink = ({ source, title, description }) => {
             {
                 pathname: "/search/search_result",
                 params: {
-                    query: title.toLowerCase().replace(/\s/g, ''),
+                    query: title,
                     category: true,
                 }
             }

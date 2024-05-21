@@ -10,14 +10,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SearchScreen = () => {
     const router = useRouter();
+    const navigation = useNavigation
     const catProvider = useCategory()
 
     const [text, setText] = React.useState("")
 
     const handleSearch = () => {
-        console.log("dienter")
         catProvider.changeCategory(null)
-        router.push(`/search/search_result?query=${text}&category=false`);
+        router.push({pathname:`/search/search_result`, params: {query: text, category: 'false'}});
     };
     return (
         <SafeAreaView style={styles.container}>
