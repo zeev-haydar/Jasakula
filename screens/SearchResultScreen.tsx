@@ -67,7 +67,7 @@ const SearchResultScreen = () => {
                     throw response.error
                 };
                 setData(response.data);
-                printAllElements(data);
+                // printAllElements(data);
             } catch (error) {
                 setError(error.message);
             } finally {

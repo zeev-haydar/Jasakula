@@ -26,7 +26,7 @@ export default function HomeScreen() {
   const handleSearch = () => {
     console.log("dienter");
     catProvider.changeCategory(null);
-    router.push(`/search/search_result?query=${text}&category=false`);
+    router.navigate(`/search/search_result?query=${text}&category=false`);
 
   };
 
@@ -34,6 +34,7 @@ export default function HomeScreen() {
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
+        router.dismissAll()
         BackHandler.exitApp();
         return true;
       };
