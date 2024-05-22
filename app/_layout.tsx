@@ -5,6 +5,11 @@ import { SafeAreaView } from "react-native";
 import { JasaProvider } from "@/providers/JasaProvider";
 
 export default function AppLayout() {
+
+    const [fontsLoaded, fontsError] = useFonts({
+        'DM-Sans': require('@/assets/fonts/DM_Sans/DMSans-VariableFont_opsz,wght.ttf')
+      })
+    
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <CategoryProvider>

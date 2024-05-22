@@ -4,16 +4,16 @@ import Jasa from '@/models/Jasa'
 import { formatPrice } from '@/utils/formatting'
 
 
-const SearchResultCard: React.FC<{ jasa: Jasa, source: ImageSourcePropType }> = ({ jasa, source }) => {
+const SearchResultCard: React.FC<{ nama: string, rating: number, harga: number, source: ImageSourcePropType }> = ({nama, rating, harga, source }) => {
     return (
         <View style={styles.container}>
             <View style={styles.image_container}>
                 <Image source={source} style={styles.image} resizeMode='cover' />
             </View>
             <View style= {styles.information}>
-                <Text style={[styles.text, {fontWeight: '700'}]}>{jasa.nama}</Text>
-                <Text style={styles.text}>★ {jasa.rating}</Text>
-                <Text style={[styles.text, {textAlign: 'right'}]}>Mulai dari <Text style={{color: '#71BFD1'}}>Rp{formatPrice(jasa.harga)}</Text></Text>
+                <Text style={[styles.text, {fontWeight: '700'}]}>{nama}</Text>
+                <Text style={styles.text}>★ {rating}</Text>
+                <Text style={[styles.text, {textAlign: 'right'}]}>Mulai dari <Text style={{color: '#71BFD1'}}>Rp{formatPrice(harga)}</Text></Text>
             </View>
         </View>
     )

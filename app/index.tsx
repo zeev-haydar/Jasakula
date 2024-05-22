@@ -14,7 +14,7 @@ export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
 
   const [fontsLoaded, fontsError] = useFonts({
-    'DM-Sans': require('../assets/fonts/DM_Sans/DMSans-VariableFont_opsz,wght.ttf')
+    'DM-Sans': require('@/assets/fonts/DM_Sans/DMSans-VariableFont_opsz,wght.ttf')
   })
 
   useEffect(() => {
