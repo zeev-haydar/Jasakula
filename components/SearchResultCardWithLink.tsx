@@ -5,25 +5,19 @@ import Jasa from '@/models/Jasa'
 import { Link } from 'expo-router'
 import { useJasa } from '@/providers/JasaProvider'
 
-const SearchResultCardWithLink: React.FC<{ jasa: Jasa, source: ImageSourcePropType }> = ({ jasa, source }) => {
-  const jasaProvider = useJasa();
-
-  const handleJasa = () => {
-    jasaProvider.changeJasa(jasa);
-  }
+const SearchResultCardWithLink: React.FC<{id:string, nama: string, rating: number, harga: number, source: ImageSourcePropType }> = ({id, nama, rating, harga, source }) => {
 
   return (
     <Link push href={
       {
         pathname: `/search/works/[slug]`,
-        params: {slug: jasa.id}
+        params: {slug: id}
       }
     }
-    onPress={()=>handleJasa()}
       asChild
     >
       <Pressable>
-        <SearchResultCard jasa={jasa} source={source} />
+        <SearchResultCard nama={nama} harga={harga} rating={rating} source={source} />
       </Pressable>
     </Link>
   )

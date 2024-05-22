@@ -36,30 +36,38 @@ const SearchResultScreen = () => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                let response: PostgrestSingleResponse<{ jasa: any[]; kategori: { name: any }[] }[]>;
+                let response: PostgrestSingleResponse<any[]>;
                 if (category === 'true') {
                     response = await supabase
                         .from('jasakategori')
                         .select(`
-                            jasa(*,
-                                ulasan(*,
-                                    pengguna: pengguna_id(id, full_name)
-                                ),
-                                penjual: penjual_id(
-                                    *,
-                                    pengguna: pengguna_id(id, full_name)
-                                )
+                            jasa(
+                                id,
+                                harga,
+                                rating,
+                                nama
                             ),
                             kategori!inner(
                                 name
                             )`).eq("kategori.name", query);
+                } else {
+                    response = await supabase
+                        .from('jasa')
+                        .select(`
+                            id,
+                            harga,
+                            rating,
+                            nama,
+                            deskripsi
+                        `)
+                        .or(`nama.ilike.%${query}%,deskripsi.ilike.%${query}%`);
                 }
                 if (response.error) {
                     console.log(response.error)
                     throw response.error
                 };
                 setData(response.data);
-                printAllElements(response.data);
+                printAllElements(data);
             } catch (error) {
                 setError(error.message);
             } finally {
@@ -94,7 +102,7 @@ const SearchResultScreen = () => {
         <View style={styles.container}>
             <Stack.Screen options={{
                 headerShown: true, title: `${title ? title : query}`,
-                headerTitleStyle: { fontFamily: 'DM-Sans', fontWeight: 'bold', fontSize: 25},
+                headerTitleStyle: { fontFamily: 'DM-Sans', fontWeight: 'bold', fontSize: 25 },
                 headerLeft: () => (
                     <Button onPress={() => router.back()} style={styles.button_container}>
                         <FontAwesomeIcon icon={faArrowLeft} color='#fff' size={20} style={{ justifyContent: 'center', alignItems: 'center' }} />
@@ -117,10 +125,10 @@ const SearchResultScreen = () => {
 
                     </View>
 
-                ) : <Text>Search Result for {query}</Text>
+                ) : null
                 }
                 <View style={styles.search_results}>
-                {loading ? (
+                    {loading ? (
                         <Text style={[styles.text, { fontSize: 15, textAlign: 'center', color: "#9f9f9f" }]}>Loading...</Text>
                     ) : error ? (
                         <Text style={[styles.text, { fontSize: 15, textAlign: 'center', color: "#9f9f9f" }]}>{error}</Text>
@@ -128,31 +136,29 @@ const SearchResultScreen = () => {
                         <Text style={[styles.text, { fontSize: 15, textAlign: 'center', color: "#9f9f9f" }]}>Result not found</Text>
                     ) : (
                         data.map((item, index) => {
-                            const jasa = item.jasa;
-                            if (jasa) {
-                                const penjual = jasa.penjual || {};
-                                const pengguna = penjual.pengguna || {};
+                            if (category === 'true') {
+                                const jasa = item.jasa;
+                                if (jasa) {
+                                    return (
+                                        <SearchResultCardWithLink
+                                            key={index}
+                                            id={jasa.id}
+                                            source={require('@/assets/images/placeholder-design.png')}
+                                            nama={jasa.nama}
+                                            rating={jasa.rating}
+                                            harga={jasa.harga}
+                                        />
+                                    );
+                                }
+                            } else {
                                 return (
                                     <SearchResultCardWithLink
                                         key={index}
+                                        id={item.id}
                                         source={require('@/assets/images/placeholder-design.png')}
-                                        jasa={new Jasa(
-                                            jasa.id,
-                                            jasa.nama,
-                                            jasa.deskripsi,
-                                            jasa.rating,
-                                            jasa.harga,
-                                            jasa.jenis,
-                                            new Penjual(
-                                                penjual.id,
-                                                new Pengguna(pengguna.id, pengguna.full_name, null, null)
-                                            ),
-                                            null,
-                                            jasa.ulasan.map((item: { id: string; sent_at: string; content: string; rating: number; pengguna: { id: string; full_name: string } })=>{
-                                                new Ulasan(item.id, item.sent_at, item.content, item.rating, new Pengguna(item.pengguna.id, item.pengguna.full_name, null, null))
-                                            }
-                                            )
-                                        )}
+                                        nama={item.nama}
+                                        rating={item.rating}
+                                        harga={item.harga}
                                     />
                                 );
                             }

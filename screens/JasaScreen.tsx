@@ -1,41 +1,75 @@
 import { StyleSheet, Text, View, Image, Dimensions, ScrollView, Pressable } from 'react-native'
-import React from 'react'
-import { Stack, useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
+import React, { useEffect, useState } from 'react'
+import { Link, Stack, useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { formatPrice } from '@/utils/formatting';
+import { formatPrice, printAllElements } from '@/utils/formatting';
 import { useJasa } from '@/providers/JasaProvider';
 import StackView from '@/components/StackView';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { Button } from 'react-native-paper';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { supabase } from '@/utils/supabase';
 
 const JasaScreen = () => {
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     const { slug } = useLocalSearchParams();
 
-    const navigation = useNavigation();
     const router = useRouter();
 
     const { jasa: jasaContext } = useJasa();
     const { changeJasa } = useJasa();
 
-    const nama = jasaContext ? jasaContext.nama : '';
-    const rating = jasaContext ? jasaContext.rating : '';
-    const deskripsi = jasaContext ? jasaContext.deskripsi : '';
     const imagePath = jasaContext && jasaContext.imagePath ? jasaContext.imagePath : require('@/assets/images/placeholder-design.png'); // use template image
-    const penjual = jasaContext ? jasaContext.penjual.pengguna.fullName : '';
-    const harga = jasaContext ? jasaContext.harga : '';
     const screenWidth = Dimensions.get('window').width;
-    const jumlahUlasan = jasaContext && jasaContext.ulasan ? jasaContext.ulasan.length : 0;
-    
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                let response;
+                response = await supabase
+                    .from('jasa')
+                    .select(`
+                        *,
+                        penjual(*,
+                            pengguna: pengguna_id(id, full_name, nickname)
+                        )
+                    `).eq('id', slug);
+                if (response.error) {
+                    throw response.error;
+                }
+                setData(response.data);
+                // printAllElements(data);   // untuk debugging
+            } catch (error) {
+                setError(error.message);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchData();
+
+    }, [slug])
+
     // Set image container height proportional to screen width (16:9 ratio)
     const imageHeight = (9 / 16) * screenWidth;
     return (
         <SafeAreaView style={{ flex: 1 }}>
+
             <Stack.Screen options={{
                 headerShown: false
             }} />
-            <ScrollView contentContainerStyle={styles.scrollViewContent}>
+            {loading ? (
+                <Text style={[styles.text, { fontSize: 15, textAlign: 'center', justifyContent: 'center', color: "#9f9f9f" }]}>Loading...</Text>
+            ) : error ? (
+                <Text style={[styles.text, { fontSize: 15, textAlign: 'center', justifyContent: 'center', color: "#9f9f9f" }]}>{error}</Text>
+            ) : data.length === 0 ? (
+                <Text style={[styles.text, { fontSize: 15, textAlign: 'center', justifyContent: 'center', color: "#9f9f9f" }]}>Result not found</Text>
+            ) : (<ScrollView contentContainerStyle={styles.scrollViewContent}>
                 <View style={styles.container}>
 
                     <View style={[styles.stackContainer, { height: imageHeight }]}>
@@ -53,9 +87,9 @@ const JasaScreen = () => {
                     <View style={styles.content}>
                         <View style={styles.information}>
                             {React.Children.map([
-                                <Text style={[styles.text, styles.nama]} key="nama">{nama}</Text>,
-                                <Text style={[styles.text, styles.rating]} key="rating">★ {rating}</Text>,
-                                <Text style={[styles.text, styles.deskripsi]} key="deskripsi">{deskripsi}</Text>,
+                                <Text style={[styles.text, styles.nama]} key="nama">{data[0].nama}</Text>,
+                                <Text style={[styles.text, styles.rating]} key="rating">★ {data[0].rating}</Text>,
+                                <Text style={[styles.text, styles.deskripsi]} key="deskripsi">{data[0].deskripsi}</Text>,
                             ], child => (
                                 React.cloneElement(child, { style: [child.props.style, { paddingBottom: 8 }] })
                             ))}
@@ -66,7 +100,7 @@ const JasaScreen = () => {
                                     <FontAwesomeIcon icon={faUser} size={16} color='#71BFD1' />
                                 </View>
 
-                                <Text style={[styles.text, styles.rating]}>{penjual}</Text>
+                                <Text style={[styles.text, styles.rating]}>{data[0].penjual.pengguna.full_name}</Text>
                             </View>
                             <Button style={styles.chatFreelancerButton}>
                                 <Text style={[styles.text, { fontSize: 10, color: '#71BFD1', fontWeight: 'bold' }]}>Chat Freelancer</Text>
@@ -74,22 +108,29 @@ const JasaScreen = () => {
                         </View>
                         <View style={styles.harga}>
                             <Text style={[styles.text, styles.hargaJual]}>Harga Jasa :</Text>
-                            <Text style={[styles.text, styles.priceTag]}>Rp{formatPrice(harga)}</Text>
+                            <Text style={[styles.text, styles.priceTag]}>Rp{formatPrice(data[0].harga)}</Text>
                         </View>
                         <Text style={[styles.text, { color: '#9F9F9F', fontSize: 10 }]}>Penyelesaian sekitar 3 hari</Text>
                         <Button style={styles.nextButton}>
                             <Text style={[styles.text, { fontSize: 10, color: '#fff', fontWeight: 'bold' }]}>Lanjutkan</Text>
                         </Button>
                         <View style={styles.ulasan}>
-                            <Text style={[styles.text, styles.ulasanHeader]}>{jumlahUlasan} Ulasan</Text>
-                            <Pressable>
-                                <Text style={[styles.text, styles.lihatSemua]}>Lihat semua</Text>
-                            </Pressable>
+                            <Text style={[styles.text, styles.ulasanHeader]}>{data[0].jumlah_ulasan} Ulasan</Text>
+                            <Link push  
+                            href={
+                                 `/search/works/${slug}/reviews/`
+                            }
+                            asChild>
+                                <Pressable onPress={()=>console.log("dipencet")}>
+                                    <Text style={[styles.text, styles.lihatSemua]}>Lihat semua</Text>
+                                </Pressable>
+                            </Link>
+
                         </View>
                     </View>
 
                 </View>
-            </ScrollView>
+            </ScrollView>)}
         </SafeAreaView>
 
     )
