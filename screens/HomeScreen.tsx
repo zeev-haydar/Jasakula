@@ -9,7 +9,7 @@ import { useCategory } from '@/providers/CategoryProvider';
 import { Tabs, Redirect, useFocusEffect, useRootNavigationState, useNavigationContainerRef } from "expo-router";
 import { BackHandler } from "react-native";
 import { supabase } from '@/utils/supabase';
-
+import { Session } from '@supabase/supabase-js'
 
 
 /**
@@ -17,10 +17,10 @@ import { supabase } from '@/utils/supabase';
  * @returns 
  */
 export default function HomeScreen() {
-  const user = "Danang";
   const catProvider = useCategory()
-
+  const [session, setSession] = useState<Session | null>(null)
   const [text, setText] = React.useState("")
+  const [nama, setNama] = React.useState("")
 
   const router = useRouter();
   const handleSearch = () => {
@@ -30,6 +30,7 @@ export default function HomeScreen() {
 
   };
 
+  
 
   useFocusEffect(
     React.useCallback(() => {
@@ -37,7 +38,10 @@ export default function HomeScreen() {
         BackHandler.exitApp();
         return true;
       };
-
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setSession(session)
+      })
+      console.log(session)
       BackHandler.addEventListener('hardwareBackPress', onBackPress);
 
       return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
@@ -63,7 +67,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Stack.Screen options={{
-        headerShown: true, headerTransparent: true, title: `Selamat Datang, ${user}.`,
+        headerShown: true, headerTransparent: true, title: `Selamat Datang, ${session.user.user_metadata.username}.`,
         headerTitleStyle: { fontFamily: 'DM-Sans', fontWeight: 'bold', fontSize: 25 }
       }} />
       <View style={styles.background_vector}>
