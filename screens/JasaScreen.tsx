@@ -15,6 +15,7 @@ const JasaScreen = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isTimeout, setIsTimeout] = useState(false);
 
     const { slug } = useLocalSearchParams();
 
@@ -26,34 +27,48 @@ const JasaScreen = () => {
     const imagePath = jasaContext && jasaContext.imagePath ? jasaContext.imagePath : require('@/assets/images/placeholder-design.png'); // use template image
     const screenWidth = Dimensions.get('window').width;
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            try {
-                let response;
-                response = await supabase
-                    .from('jasa')
-                    .select(`
-                        *,
-                        penjual(*,
-                            pengguna: pengguna_id(id, full_name, nickname)
+    const fetchData = async () => {
+        console.log(slug);
+        setLoading(true);
+        setIsTimeout(false);
+
+        const timeoutId = setTimeout(() => {
+            setIsTimeout(true);
+            setLoading(false);
+        }, 10000); // 10 detik
+
+        try {
+            let response = await supabase
+                .from('jasa')
+                .select(`
+                    *,
+                    penjual(*,
+                        pengguna: pengguna_id(
+                            id, full_name, nickname
                         )
-                    `).eq('id', slug);
-                if (response.error) {
-                    throw response.error;
-                }
-                setData(response.data);
-                // printAllElements(data);   // untuk debugging
-            } catch (error) {
-                setError(error.message);
-            } finally {
-                setLoading(false);
+                    )
+                `).eq('id', slug);
+
+            if (response.error) {
+                console.log(response.error)
+                throw response.error;
             }
+
+            clearTimeout(timeoutId); // Clear timeout jika fetch berhasil
+
+            console.log("Done fetching")
+            setData(response.data);
+            // printAllElements(response.data); // untuk debugging
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
         }
+    }
 
+    useEffect(() => {
         fetchData();
-
-    }, [slug])
+    }, [slug]);
 
     // Set image container height proportional to screen width (16:9 ratio)
     const imageHeight = (9 / 16) * screenWidth;
@@ -64,7 +79,9 @@ const JasaScreen = () => {
                 headerShown: false
             }} />
             {loading ? (
-                <Text style={[styles.text, { fontSize: 15, textAlign: 'center', justifyContent: 'center', color: "#9f9f9f" }]}>Loading...</Text>
+                <Text style={[styles.text, { fontSize: 15, textAlign: 'center', justifyContent: 'center', color: "#9f9f9f" }]}>
+                    {isTimeout ? "Mencapai timeout. coba lagi" : "Loading..."}
+                </Text>
             ) : error ? (
                 <Text style={[styles.text, { fontSize: 15, textAlign: 'center', justifyContent: 'center', color: "#9f9f9f" }]}>{error}</Text>
             ) : data.length === 0 ? (
@@ -100,7 +117,7 @@ const JasaScreen = () => {
                                     <FontAwesomeIcon icon={faUser} size={16} color='#71BFD1' />
                                 </View>
 
-                                <Text style={[styles.text, styles.rating]}>{data[0].penjual.pengguna.full_name}</Text>
+                                <Text style={[styles.text, styles.rating]}>{data[0].penjual?.pengguna?.full_name ? data[0].penjual.pengguna.full_name : "No Name"}</Text>
                             </View>
                             <Button style={styles.chatFreelancerButton}>
                                 <Text style={[styles.text, { fontSize: 10, color: '#71BFD1', fontWeight: 'bold' }]}>Chat Freelancer</Text>
@@ -116,11 +133,11 @@ const JasaScreen = () => {
                         </Button>
                         <View style={styles.ulasan}>
                             <Text style={[styles.text, styles.ulasanHeader]}>{data[0].jumlah_ulasan} Ulasan</Text>
-                            <Link push  
-                            href={
-                                 `/search/works/${slug}/reviews/`
-                            }
-                            asChild>
+                            <Link push
+                                href={
+                                    `/search/works/${slug}/reviews/`
+                                }
+                                asChild>
                                 <Pressable>
                                     <Text style={[styles.text, styles.lihatSemua]}>Lihat semua</Text>
                                 </Pressable>
@@ -130,7 +147,15 @@ const JasaScreen = () => {
                     </View>
 
                 </View>
-            </ScrollView>)}
+            </ScrollView>)
+            }
+            {isTimeout && (
+                <View style={{ alignItems: 'center', marginTop: 20 }}>
+                    <Button onPress={fetchData}>
+                        <Text style={{ color: '#71BFD1', fontWeight: 'bold' }}>Refresh</Text>
+                    </Button>
+                </View>
+            )}
         </SafeAreaView>
 
     )

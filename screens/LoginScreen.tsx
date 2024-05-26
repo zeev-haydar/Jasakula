@@ -1,8 +1,11 @@
-import { StyleSheet, Text, View, AppState, Image, TextInput, TouchableOpacity, Alert, SafeAreaView, ScrollView } from 'react-native'
-import React, { useState } from 'react'
+import { StyleSheet, Text, View, AppState, Image, TextInput, KeyboardAvoidingView, Platform, Alert, ScrollView, Keyboard } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { supabase } from '@/utils/supabase'
 import { Link, useRouter } from 'expo-router'
 import { Button } from 'react-native-paper'
+import { useSession } from '@/providers/SessionProvider'
+import { Session } from '@supabase/supabase-js'
 AppState.addEventListener('change', (state) => {
   if (state === 'active') {
     supabase.auth.startAutoRefresh()
@@ -12,11 +15,16 @@ AppState.addEventListener('change', (state) => {
 })
 
 
+
+
 const LoginScreen = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [session, setSession] = useState<Session | null>(null);
   const router = useRouter();
+
+  const scrollViewRef = React.useRef(null);
   async function signInWithEmail() {
     setLoading(true)
     console.log("mau login ah")
@@ -49,60 +57,102 @@ const LoginScreen = () => {
     setLoading(false)
   }
 
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        console.log("Keyboard muncul")
+        scrollViewRef.current?.setNativeProps({
+          // contentInset: { bottom: 250 },
+        });
+      }
+    );
+
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        console.log("Keyboard hilang")
+        scrollViewRef.current?.setNativeProps({
+          // contentInset: { bottom: 0 },
+        });
+      }
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
 
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.contentStyle}>
-        <View>
-          <Text style={{ fontSize: 25, fontFamily: "DM-Sans", fontWeight: 'bold', color: '0A2135', marginTop: 85 }}>
-            JasaKula
-          </Text>
-        </View>
-        <Text style={{ fontSize: 10, fontFamily: "DM-Sans", fontWeight: 'normal', color: '0A2135', marginTop: 13, textAlign: 'center', marginHorizontal: 50 }}>
-          JasaKula menjadi platform tempat bertemunya para freelancer dan pemiliki projek. Freelancer akan membuat penawaran kerja untuk anda
-        </Text>
-        <View>
-          <Image style={styles.image}
-            source={require('@/assets/adaptive-icon.png')}
-          />
-        </View>
-        <View>
-          <Text style={{ fontSize: 25, marginBottom: 15, fontWeight: "bold" }}>
-            Login
-          </Text>
-          <TextInput
-            placeholder="Email"
-            placeholderTextColor="#0A2135"
-            value={email}
-            onChangeText={setEmail}
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Password"
-            placeholderTextColor="#0A2135"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            style={[styles.input]}
-          />
-        </View>
-        <Button style={styles.button} onPress={() => { signInWithEmail(); router.replace('/home') }} >
-          <Text style={{ textAlign: "center", color: "white", fontSize: 15, fontWeight: 'normal' }}>Login</Text>
-        </Button>
-        <View style={{ flexDirection: 'row', }}>
-          <Text style={{paddingRight: 4}}>
-            Tidak memiliki akun?
 
-          </Text><Link href="/register">
-            <Text style={{ color: '#71BFD1' }} >
-              Register
+    <SafeAreaView style={{ flex: 1, paddingBottom: 24 }}>
+      <ScrollView
+        contentContainerStyle={styles.contentStyle}
+        keyboardShouldPersistTaps="handled"
+        ref={scrollViewRef}
+
+      >
+        <KeyboardAvoidingView
+          style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center' }}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 150}
+          enabled
+        >
+          <View>
+            <Text style={{ fontSize: 25, fontFamily: "DM-Sans", fontWeight: 'bold', color: '#0A2135', marginTop: 40 }}>
+              JasaKula
             </Text>
-          </Link>
-        </View>
+          </View>
+          <Text style={{ fontSize: 10, fontFamily: "DM-Sans", fontWeight: 'normal', color: '#0A2135', marginTop: 13, textAlign: 'center', marginHorizontal: 50 }}>
+            JasaKula menjadi platform tempat bertemunya para freelancer dan pemiliki projek. Freelancer akan membuat penawaran kerja untuk anda
+          </Text>
+          <View>
+            <Image style={styles.image}
+              source={require('@/assets/adaptive-icon.png')}
+            />
+          </View>
+          <View>
+            <Text style={{ fontSize: 25, marginBottom: 15, fontWeight: "bold" }}>
+              Login
+            </Text>
+            <TextInput
+              placeholder="Email"
+              placeholderTextColor="#0A2135"
+              value={email}
+              onChangeText={setEmail}
+              style={styles.input}
+            />
+            <TextInput
+              placeholder="Password"
+              placeholderTextColor="#0A2135"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              style={[styles.input]}
+            />
+          </View>
+          <Button style={styles.button} onPress={() => { signInWithEmail(); router.replace('/home') }}  disabled={loading} >
+            <Text style={{ textAlign: "center", color: "white", fontSize: 15, fontWeight: 'normal' }}>Login</Text>
+          </Button>
+          <View style={{ flexDirection: 'row', }}>
+            <Text style={{ paddingRight: 4 }}>
+              Tidak memiliki akun?
 
+            </Text><Link href="/register">
+              <Text style={{ color: '#71BFD1' }} >
+                Register
+              </Text>
+            </Link>
+          </View>
+        </KeyboardAvoidingView>
       </ScrollView>
     </SafeAreaView>
+
+
+
 
   )
 }
@@ -121,7 +171,7 @@ const styles = StyleSheet.create({
     width: 300,
     height: 35,
     backgroundColor: '#FFFFFF',
-    borderColor: "0A2135",
+    borderColor: "#0A2135",
     borderWidth: 1,
     paddingHorizontal: 5,
     borderRadius: 5,
