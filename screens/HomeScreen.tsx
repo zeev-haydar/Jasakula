@@ -26,7 +26,7 @@ export default function HomeScreen() {
   const handleSearch = () => {
     console.log("dienter");
     catProvider.changeCategory(null);
-    router.push(`/search/search_result?query=${text}&category=false`);
+    router.navigate(`/search/search_result?query=${text}&category=false`);
 
   };
 
@@ -35,13 +35,26 @@ export default function HomeScreen() {
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
+        if (router.canDismiss()) router.dismissAll()
         BackHandler.exitApp();
         return true;
       };
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        setSession(session)
-      })
-      console.log(session)
+      const fetchSession = async () => {
+        try {
+          const { data: { session }, error } = await supabase.auth.getSession();
+          if (error) throw error;
+          setSession(session);
+          if (!session || !session.user) {
+            router.replace('/login');
+          }
+        } catch (error) {
+          console.error('Error fetching session:', error);
+          router.replace('/login');
+        }
+      };
+
+      fetchSession();
+      // console.log(session)
       BackHandler.addEventListener('hardwareBackPress', onBackPress);
 
       return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
@@ -67,7 +80,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Stack.Screen options={{
-        headerShown: true, headerTransparent: true, title: `Selamat Datang, ${session.user.user_metadata.username}.`,
+        headerShown: true, headerTransparent: true, title: `Selamat Datang, ${session?.user?.user_metadata?.username ?? 'Pengguna'}.`,
         headerTitleStyle: { fontFamily: 'DM-Sans', fontWeight: 'bold', fontSize: 25 }
       }} />
       <View style={styles.background_vector}>

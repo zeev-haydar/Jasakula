@@ -2,6 +2,7 @@ import { View, Text } from 'react-native'
 import React, { useState } from 'react'
 import { StyleSheet } from 'react-native'
 import { Stack } from 'expo-router'
+import { Button } from 'react-native-paper'
 
 const Page = () => {
   

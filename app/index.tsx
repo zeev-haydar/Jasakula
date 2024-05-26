@@ -4,14 +4,17 @@ import HomeScreen from '../screens/HomeScreen';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font'
-import { Redirect } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { useFonts } from 'expo-font';
+import { Session } from '@supabase/supabase-js';
+import { supabase } from '@/utils/supabase';
 
 // SplashScreen.preventAutoHideAsync();
 
 export default function App() {
 
   const [appIsReady, setAppIsReady] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
 
   const [fontsLoaded, fontsError] = useFonts({
     'DM-Sans': require('@/assets/fonts/DM_Sans/DMSans-VariableFont_opsz,wght.ttf')
@@ -22,7 +25,6 @@ export default function App() {
       try {
         console.log("this was printed")
         fadeOut();
-        // await new Promise(resolve => setTimeout(resolve, 3000));
       }
       catch (e) {
         console.warn(e);

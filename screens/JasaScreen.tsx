@@ -58,7 +58,7 @@ const JasaScreen = () => {
     // Set image container height proportional to screen width (16:9 ratio)
     const imageHeight = (9 / 16) * screenWidth;
     return (
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
 
             <Stack.Screen options={{
                 headerShown: false
@@ -121,7 +121,7 @@ const JasaScreen = () => {
                                  `/search/works/${slug}/reviews/`
                             }
                             asChild>
-                                <Pressable onPress={()=>console.log("dipencet")}>
+                                <Pressable>
                                     <Text style={[styles.text, styles.lihatSemua]}>Lihat semua</Text>
                                 </Pressable>
                             </Link>
@@ -244,5 +244,6 @@ const styles = StyleSheet.create({
     lihatSemua: {
         fontSize: 10,
         color: '#71BFD1',
+        paddingTop: 8,
     }
 })
