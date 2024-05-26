@@ -131,7 +131,7 @@ const App = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "F9F9F9",
+    backgroundColor: "#F9F9F9",
 
 
   },
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "DM-Sans",
     fontWeight: 'bold',
-    color: '9F9F9F', // warna teks tombol
+    color: '#9F9F9F', // warna teks tombol
   },
   header: {
     backgroundColor: '#71BFD1',
