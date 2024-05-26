@@ -34,7 +34,7 @@ export default function HomeScreen() {
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
-        router.dismissAll()
+        if (router.canDismiss()) router.dismissAll()
         BackHandler.exitApp();
         return true;
       };
