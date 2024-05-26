@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native'
 import { Stack, useRouter } from 'expo-router'
 import { Button } from 'react-native-paper'
 import { supabase } from '@/utils/supabase'
+import ProfileScreen from '@/screens/ProfileScreen'
 
 const Page = () => {
   const router = useRouter();
@@ -19,13 +20,7 @@ const Page = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <Stack.Screen options={{ headerShown: true, title: "Profile" }} />
-      <Button onPress={handleLogout}>
-        <Text>Pencet untuk logout</Text>
-      </Button>
-
-    </View>
+    <ProfileScreen/>
   )
 }
 
