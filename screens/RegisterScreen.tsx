@@ -101,7 +101,7 @@ const RegisterScreen = () => {
             />
           </View>
           <TouchableOpacity style={styles.button} onPress={() => signUpWithEmail()}>
-            <Text style={{ textAlign: "center", color: "white", fontSize: 15, fontWeight: 'normal' }}>Register</Text>
+            <Text style={{ textAlign: "center", color: "white", fontSize: 15, fontWeight: 'normal' }}  disabled={loading}>Register</Text>
           </TouchableOpacity>
           <View style={{ flexDirection: 'row', }}>
             <Text style={{ paddingRight: 4 }}>

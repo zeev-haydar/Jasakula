@@ -134,7 +134,7 @@ const LoginScreen = () => {
               style={[styles.input]}
             />
           </View>
-          <Button style={styles.button} onPress={() => { signInWithEmail(); router.replace('/home') }} >
+          <Button style={styles.button} onPress={() => { signInWithEmail(); router.replace('/home') }}  disabled={loading} >
             <Text style={{ textAlign: "center", color: "white", fontSize: 15, fontWeight: 'normal' }}>Login</Text>
           </Button>
           <View style={{ flexDirection: 'row', }}>
