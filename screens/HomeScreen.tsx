@@ -45,11 +45,11 @@ export default function HomeScreen() {
           if (error) throw error;
           setSession(session);
           if (!session || !session.user) {
-            router.replace('/login');
+            // router.replace('/login');
           }
         } catch (error) {
           console.error('Error fetching session:', error);
-          router.replace('/login');
+          // router.replace('/login');
         }
       };
 
