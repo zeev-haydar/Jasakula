@@ -25,9 +25,30 @@ const RegisterScreen = () => {
       }
     })
 
-    if (error) Alert.alert(error.message)
-    if (!session) Alert.alert('Please check your inbox for email verification!')
+    if (error) {
+      Alert.alert(error.message);
+    } else {
+      if (!session) {
+        Alert.alert('Please check your inbox for email verification!');
+      } else {
+        await upsertUserData(session.user.id, nama, password);
+      }
+    }
     setLoading(false)
+  }
+
+  async function upsertUserData(userId, username, password) {
+    const { error } = await supabase.from('pengguna').upsert({
+      id: userId,
+      username: username,
+      password: password,
+    });
+
+    if (error) {
+      Alert.alert('Error updating user data', error.message);
+    } else {
+      Alert.alert('User data updated successfully');
+    }
   }
   return (
     <View style={{alignItems: 'center'}}>
