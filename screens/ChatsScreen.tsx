@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { Link, Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import Vector1 from '../assets/styling/vector_1.svg';
 import { SearchBar } from '@/components/search_bar';
 import { FlatList } from 'react-native';
@@ -13,12 +13,12 @@ const ChatsScreen = () => {
 
     const [text, setText] = React.useState("")
     const [nama, setNama] = React.useState("")
-    const { slug } = useLocalSearchParams();
-    const auth =  useAuth()
+    const { user_id } = useLocalSearchParams();
+    const auth = useAuth()
 
     if (auth.session.user?.id) {
         console.log(`Chat milik ${auth.session.user.user_metadata.username}`)
-        console.log(`id pengguna: ${slug}`)
+        console.log(`id pengguna: ${user_id}`)
     }
 
     var itemData = [
@@ -40,19 +40,24 @@ const ChatsScreen = () => {
 
     const renderItem = ({ item }) => {
         return (
-            <View style={styles.chat}>
-                <View style={{ marginRight: 12, backgroundColor: '#000', padding: 6, borderRadius: 128 }}>
-                    <FontAwesomeIcon icon={faUser} size={20} color='#fff' />
-                </View>
-                <View style={styles.chatTexts}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <Text style={[styles.text, { fontWeight: 'bold' }]}>{item.nama}</Text>
-                        <Text style={[styles.text, styles.normalText]}>{item.lastMessageDate}</Text>
-                    </View>
+            <Link asChild href={`/chats/${item.id}`}>
+                <Pressable>
+                    <View style={styles.chat}>
+                        <View style={{ marginRight: 12, backgroundColor: '#000', padding: 6, borderRadius: 128 }}>
+                            <FontAwesomeIcon icon={faUser} size={20} color='#fff' />
+                        </View>
+                        <View style={styles.chatTexts}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Text style={[styles.text, { fontWeight: 'bold' }]}>{item.nama}</Text>
+                                <Text style={[styles.text, styles.normalText]}>{item.lastMessageDate}</Text>
+                            </View>
 
-                    <Text style={[styles.text, styles.normalText]}>{item.lastMessage}</Text>
-                </View>
-            </View>
+                            <Text style={[styles.text, styles.normalText]}>{item.lastMessage}</Text>
+                        </View>
+                    </View>
+                </Pressable>
+            </Link>
+
 
         );
     }
@@ -68,14 +73,17 @@ const ChatsScreen = () => {
                 < View style={styles.backgroundVector}>
                     <Vector1 />
                 </View>
-                <SearchBar onChangeText={setText} text={text} onSubmitEditing={handleSearch} />
+                <View style={{paddingHorizontal: 16}}>
+                    <SearchBar onChangeText={setText} text={text} onSubmitEditing={handleSearch} />
+                </View>
+
                 <View style={styles.chatList}>
                     <FlatList
                         data={itemData}
                         numColumns={1}
                         renderItem={renderItem}
                         keyExtractor={(item) => item.id.toString()}
-                        contentContainerStyle={{ flexGrow: 1 }}
+                        contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 16, }}
                     />
                 </View>
             </View>
@@ -92,7 +100,7 @@ const styles = StyleSheet.create({
         width: '100%',
         backgroundColor: '#fff',
         paddingTop: 70,
-        paddingHorizontal: 16,
+
     },
     safeAreaView: {
         flex: 1,
@@ -119,7 +127,7 @@ const styles = StyleSheet.create({
 
         flex: 1,
         paddingVertical: 8,
-        
+
 
     },
     text: {

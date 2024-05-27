@@ -8,9 +8,11 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Vector1 from '../assets/styling/vector_1.svg'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faUser, faGear, faHammer, faSignOut } from '@fortawesome/free-solid-svg-icons'
+import { useAuth } from '@/providers/AuthProvider'
 
 const ProfileScreen = () => {
   const router = useRouter();
+  const auth = useAuth();
   const handleLogout = async () => {
     console.log('dipencet')
     const { error } = await supabase.auth.signOut()
@@ -34,7 +36,7 @@ const ProfileScreen = () => {
             <View style={{ marginRight: 12, backgroundColor: '#000', padding: 6, borderRadius: 128 }}>
               <FontAwesomeIcon icon={faUser} size={20} color='#71BFD1' />
             </View>
-            <Text style={[styles.text, styles.bold, styles.normalTextSize]}>Danang Ihsan</Text>
+            <Text style={[styles.text, styles.bold, styles.normalTextSize]}>{auth.session.user.user_metadata.username}</Text>
           </View>
           <Button style={{ flex: 0, backgroundColor: '#000', borderRadius: 10 }}>
             <Text style={[styles.text, styles.bold, { color: '#fff' }, styles.normalTextSize]}> Upgrade to Seller</Text>

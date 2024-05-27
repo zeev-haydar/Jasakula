@@ -8,9 +8,7 @@ const Page = () => {
   
 
   return (
-    <Text>
-      Ga ada apa-apa di sini coy
-    </Text>
+    <ChatsScreen/>
   )
 }
 

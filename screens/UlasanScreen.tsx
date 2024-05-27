@@ -13,7 +13,7 @@ import { IconButtonProps } from 'react-native-paper'
 const UlasanScreen = () => {
     const [session, setSession] = useState(null);
     const router = useRouter();
-    const { slug } = useLocalSearchParams();
+    const { slug,user_id } = useLocalSearchParams();
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null);
