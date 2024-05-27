@@ -107,7 +107,8 @@ const RegisterScreen = () => {
             <Text style={{ paddingRight: 4 }}>
               Sudah memiliki akun?
 
-            </Text><Link href="/login">
+            </Text>
+            <Link replace href="/login">
               <Text style={{ color: '#71BFD1',}} >
                 Login
               </Text>

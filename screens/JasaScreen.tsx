@@ -95,7 +95,7 @@ const JasaScreen = () => {
                                 <Image source={imagePath} style={styles.image} resizeMode='cover' />
                             </View>
                             <Button onPress={() => { router.back(); changeJasa(null); }} style={styles.button}>
-                                <FontAwesomeIcon icon={faArrowLeft} color='#fff' size={20} style={{ justifyContent: 'center', alignItems: 'center' }} />
+                                <FontAwesomeIcon icon={faArrowLeft} color='#fff' size={20} style={{ justifyContent: 'center', }} />
                             </Button>
                         </StackView>
                     </View>

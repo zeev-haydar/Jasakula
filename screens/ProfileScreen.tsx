@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
 import React, { useState } from 'react'
 import { StyleSheet } from 'react-native'
 import { Stack, useRouter } from 'expo-router'
@@ -7,7 +7,7 @@ import { supabase } from '@/utils/supabase'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Vector1 from '../assets/styling/vector_1.svg'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faUser } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faGear, faHammer, faSignOut } from '@fortawesome/free-solid-svg-icons'
 
 const ProfileScreen = () => {
   const router = useRouter();
@@ -36,17 +36,49 @@ const ProfileScreen = () => {
             </View>
             <Text style={[styles.text, styles.bold, styles.normalTextSize]}>Danang Ihsan</Text>
           </View>
-          <Button style={{flex: 0, backgroundColor: '#000', borderRadius: 10}}>
-            <Text style={[styles.text, styles.bold, {color: '#fff'}, styles.normalTextSize]}> Upgrade to Seller</Text>
+          <Button style={{ flex: 0, backgroundColor: '#000', borderRadius: 10 }}>
+            <Text style={[styles.text, styles.bold, { color: '#fff' }, styles.normalTextSize]}> Upgrade to Seller</Text>
           </Button>
         </View>
 
-        <View style= {styles.textContainer}>
-          <Text style={{fontSize: 20, fontFamily: 'DM-Sans'}}>Jasakula</Text>
+        <View style={styles.textContainer}>
+          <Text style={{ fontSize: 20, fontFamily: 'DM-Sans', fontWeight: 'bold', paddingBottom: 24, borderBottomWidth: 0.3, borderBottomColor: "#CFCECE" }}>Jasakula</Text>
+          <View style={styles.menuText}>
+            <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
+              <FontAwesomeIcon icon={faUser} style={{ marginRight: 8 }} color='#CCC' />
+              <Text style={[{ fontSize: 15, }, styles.text]}>Profile</Text>
+            </View>
+            <Text style={[styles.text, styles.lebihDariSymbol]}>{">"}</Text>
+
+          </View>
+          <View style={styles.menuText}>
+            <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
+              <FontAwesomeIcon icon={faGear} style={{ marginRight: 8 }} color='#CCC' />
+              <Text style={[{ fontSize: 15, }, styles.text]}>Setting</Text>
+            </View>
+            <Text style={[styles.text, styles.lebihDariSymbol]}>{">"}</Text>
+
+          </View>
+          <View style={styles.menuText}>
+            <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
+              <FontAwesomeIcon icon={faHammer} style={{ marginRight: 8 }} color='#CCC' />
+              <Text style={[{ fontSize: 15, }, styles.text]}>Jasaku</Text>
+            </View>
+            <Text style={[styles.text, styles.lebihDariSymbol]}>{">"}</Text>
+          </View>
+          <Pressable onPress={handleLogout}>
+          <View style={styles.menuText}>
+            <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
+              <FontAwesomeIcon icon={faSignOut} style={{ marginRight: 8 }} color='#CCC' />
+              <Text style={[{ fontSize: 15, }, styles.text]}>Log keluar</Text>
+            </View>
+            <Text style={[styles.text, styles.lebihDariSymbol]}>{">"}</Text>
+          </View>
+          </Pressable>
+          
+
         </View>
-        <Button onPress={handleLogout}>
-          <Text style={{color: '#000'}}>Pencet untuk logout</Text>
-        </Button>
+
 
       </View>
     </SafeAreaView>
@@ -99,10 +131,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   normalTextSize: {
-    fontSize: 10,
+    fontSize: 15,
   },
   textContainer: {
     flex: 1,
     width: '100%',
+  },
+  menuText: {
+    width: '100%',
+
+    borderBottomWidth: 0.3,
+    borderBottomColor: "#CFCECE",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  lebihDariSymbol: {
+    fontSize: 30
   }
 })

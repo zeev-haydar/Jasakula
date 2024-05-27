@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, AppState, Image, TextInput, KeyboardAvoidingView, Platform, Alert, ScrollView, Keyboard } from 'react-native'
+import { StyleSheet, Text, View, AppState, Image, TextInput, KeyboardAvoidingView, Platform, Alert, ScrollView, Keyboard, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { supabase } from '@/utils/supabase'
@@ -134,14 +134,18 @@ const LoginScreen = () => {
               style={[styles.input]}
             />
           </View>
-          <Button style={styles.button} onPress={() => { signInWithEmail(); router.replace('/home') }}  disabled={loading} >
-            <Text style={{ textAlign: "center", color: "white", fontSize: 15, fontWeight: 'normal' }}>Login</Text>
-          </Button>
+          <TouchableOpacity>
+            <Button style={styles.button} onPress={() => { signInWithEmail(); router.replace('/home') }} disabled={loading} >
+              <Text style={{ textAlign: "center", color: "white", fontSize: 15, fontWeight: 'normal' }}>Login</Text>
+            </Button>
+          </TouchableOpacity>
+
           <View style={{ flexDirection: 'row', }}>
             <Text style={{ paddingRight: 4 }}>
               Tidak memiliki akun?
 
-            </Text><Link href="/register">
+            </Text>
+            <Link replace href="/register">
               <Text style={{ color: '#71BFD1' }} >
                 Register
               </Text>
@@ -188,5 +192,35 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     justifyContent: 'center', alignItems: 'center',
     borderRadius: 20,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 20,
+  },
+  overlayBackground: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  keyboardContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  inputBox: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+    alignItems: 'center',
+  },
+  inputText: {
+    width: '100%',
+    marginBottom: 20,
+    padding: 10,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 5,
   }
 })

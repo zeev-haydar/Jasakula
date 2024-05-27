@@ -17,6 +17,8 @@ const SearchBar = ({ onSubmitEditing = () => { } , onChangeText, text}) => {
             onChangeText={onChangeText}
             left={<TextInput.Icon icon={() => <Icon name="search" size={16} />} />}
             underlineColor='transparent'
+            activeUnderlineColor='transparent'
+            cursorColor='#71bfd1'
             placeholderTextColor={'#C4C4C4'}
             onSubmitEditing={onSubmitEditing}
             style={{
