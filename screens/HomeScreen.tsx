@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Animated, Dimensions, FlatList, } from 'react-native';
 import React, { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import { Stack, useRouter } from 'expo-router';
-import Vector1 from '../assets/styling/vector_1.svg'
+import Vector1 from '../assets/styling/vector_1.svg';
 import { SearchBar } from '../components/search_bar';
 import HomeCard from '../components/home_card';
 import { useCategory } from '@/providers/CategoryProvider';
@@ -10,6 +10,7 @@ import { Tabs, Redirect, useFocusEffect, useRootNavigationState, useNavigationCo
 import { BackHandler } from "react-native";
 import { supabase } from '@/utils/supabase';
 import { Session } from '@supabase/supabase-js'
+import { useAuth } from '@/providers/AuthProvider';
 
 
 /**
@@ -21,6 +22,7 @@ export default function HomeScreen() {
   const [session, setSession] = useState<Session | null>(null)
   const [text, setText] = React.useState("")
   const [nama, setNama] = React.useState("")
+  const auth = useAuth();
 
   const router = useRouter();
   const handleSearch = () => {
@@ -44,6 +46,8 @@ export default function HomeScreen() {
         // router.replace('/login');
       }
     };
+
+    // console.log(auth.session)
 
     fetchSession();
   }, [])
@@ -126,8 +130,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     left: 0,
     top: 0,
-    // // maxHeight: 200,
-    // height: 250,
     height: '100%',
     width: '100%',
     aspectRatio: undefined

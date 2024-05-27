@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { supabase } from '@/utils/supabase'
 import { useNavigation } from '@react-navigation/native';
 import { Link } from 'expo-router'
-import { AuthProvider, useAuth } from '@/components/AuthContext';
+import { AuthProvider, useAuth } from '@/providers/AuthProvider';
 import { SafeAreaView } from 'react-native-safe-area-context';
 const RegisterScreen = () => {
   const [email, setEmail] = useState('')

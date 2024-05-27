@@ -1,7 +1,7 @@
 // AuthContext.js
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../utils/supabase';
-import { signUp, signIn, signOut } from './AuthServices';
+import { signUp, signIn, signOut } from '../components/AuthServices';
 
 const AuthContext = createContext(null);
 
@@ -34,6 +34,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     session,
     loading,
+    setSession,
     signUp,
     signIn,
     signOut,

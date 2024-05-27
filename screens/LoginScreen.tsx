@@ -6,6 +6,7 @@ import { Link, useRouter } from 'expo-router'
 import { Button } from 'react-native-paper'
 import { useSession } from '@/providers/SessionProvider'
 import { Session } from '@supabase/supabase-js'
+import { useAuth } from '@/providers/AuthProvider'
 AppState.addEventListener('change', (state) => {
   if (state === 'active') {
     supabase.auth.startAutoRefresh()
@@ -23,37 +24,24 @@ const LoginScreen = () => {
   const [loading, setLoading] = useState(false)
   const [session, setSession] = useState<Session | null>(null);
   const router = useRouter();
+  const auth = useAuth();
 
   const scrollViewRef = React.useRef(null);
   async function signInWithEmail() {
     setLoading(true)
     console.log("mau login ah")
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     })
 
     if (error) Alert.alert(error.message)
     else {
-      console.log("asd")
+      console.log("Login successful");
+      auth.setSession(data.session); 
 
     }
-    setLoading(false)
-  }
-
-  async function signUpWithEmail() {
-    setLoading(true)
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    })
-
-    if (error) Alert.alert(error.message)
-    if (!session) Alert.alert('Please check your inbox for email verification!')
     setLoading(false)
   }
 

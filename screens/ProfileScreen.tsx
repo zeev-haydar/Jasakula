@@ -147,6 +147,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   lebihDariSymbol: {
-    fontSize: 30
+    fontSize: 30,
+    color:'#CCC',
   }
 })

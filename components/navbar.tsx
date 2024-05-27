@@ -109,7 +109,7 @@ export default function NavBar() {
             <Tabs.Screen
                 name='chats'
                 options={{
-                    href: session ? "/chats" : "/login",
+                    href: session ? `/chats/${session.user.id}` : "/login",
                     tabBarLabel: "Chats",
                     title: "Chats",
                     tabBarIcon: ({color}) => (
