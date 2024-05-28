@@ -38,7 +38,17 @@
       [
         "expo-font",
         {
-          "fonts": ["./assets/fonts/DM_Sans/DMSans-VariableFont_opsz,wght.ttf"]
+          "fonts": [
+            "./assets/fonts/DM_Sans/DMSans-VariableFont_opsz,wght.ttf",
+            "node_modules/@expo-google-fonts/dm-sans/DMSans_400Regular.ttf",
+            "node_modules/@expo-google-fonts/dm-sans/DMSans_700Bold.ttf"
+          ]
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share your profile avatar."
         }
       ]
     ]

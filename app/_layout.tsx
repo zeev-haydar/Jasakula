@@ -1,18 +1,25 @@
 import { Slot } from "expo-router";
-import { useFonts } from 'expo-font';
 import { CategoryProvider } from "../providers/CategoryProvider";
-import { SafeAreaView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context"
 import { JasaProvider } from "@/providers/JasaProvider";
 import { AuthProvider } from "@/providers/AuthProvider";
+import {useFonts, DMSans_400Regular, DMSans_700Bold} from '@expo-google-fonts/dm-sans';
+
+import DM_Sans from '@expo-google-fonts/dm-sans';
 
 export default function AppLayout() {
 
     const [fontsLoaded, fontsError] = useFonts({
-        'DM-Sans': require('@/assets/fonts/DM_Sans/DMSans-VariableFont_opsz,wght.ttf')
+        DMSans_400Regular,
+        DMSans_700Bold,
     })
 
+    if (!fontsLoaded && !fontsError) {
+        return null;
+      }
+    
+
     return (
-        <SafeAreaView style={{ flex: 1 }}>
             <AuthProvider>
                 <CategoryProvider>
                     <JasaProvider>
@@ -20,8 +27,6 @@ export default function AppLayout() {
                     </JasaProvider>
                 </CategoryProvider>
             </AuthProvider>
-
-        </SafeAreaView>
     );
 
 }
