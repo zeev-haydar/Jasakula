@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo-google-fonts/dm-sans": "^0.2.3",
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
     "@fortawesome/free-brands-svg-icons": "^6.5.2",
     "@fortawesome/free-regular-svg-icons": "^6.5.2",
@@ -21,10 +22,13 @@
     "@rneui/themed": "^4.0.0-rc.8",
     "@supabase/supabase-js": "^2.43.2",
     "@types/react": "~18.2.45",
+    "base64-arraybuffer": "^1.0.2",
     "expo": "~50.0.8",
+    "expo-clipboard": "~5.0.1",
     "expo-constants": "~15.4.5",
     "expo-dev-client": "~3.3.9",
     "expo-font": "^11.10.3",
+    "expo-image-picker": "~14.7.1",
     "expo-linking": "~6.2.2",
     "expo-router": "~3.4.8",
     "expo-splash-screen": "~0.26.4",

@@ -18,7 +18,6 @@ const _layout = () => {
         },
       }}
     >
-      
     </Stack>
 
   )

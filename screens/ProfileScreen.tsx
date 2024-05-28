@@ -1,7 +1,7 @@
 import { View, Text, Pressable } from 'react-native'
 import React, { useState } from 'react'
 import { StyleSheet } from 'react-native'
-import { Stack, useRouter } from 'expo-router'
+import { Link, Stack, useRouter } from 'expo-router'
 import { Button } from 'react-native-paper'
 import { supabase } from '@/utils/supabase'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -38,9 +38,12 @@ const ProfileScreen = () => {
             </View>
             <Text style={[styles.text, styles.bold, styles.normalTextSize]}>{auth.session.user.user_metadata.username}</Text>
           </View>
-          <Button style={{ flex: 0, backgroundColor: '#000', borderRadius: 10 }}>
-            <Text style={[styles.text, styles.bold, { color: '#fff' }, styles.normalTextSize]}> Upgrade to Seller</Text>
-          </Button>
+          <Link asChild href={"/profile/upgrade"}>
+            <Button style={{ flex: 0, backgroundColor: '#000', borderRadius: 10 }}>
+              <Text style={[styles.text, styles.bold, { color: '#fff' }, styles.normalTextSize]}> Upgrade to Seller</Text>
+            </Button>
+          </Link>
+
         </View>
 
         <View style={styles.textContainer}>
@@ -69,15 +72,15 @@ const ProfileScreen = () => {
             <Text style={[styles.text, styles.lebihDariSymbol]}>{">"}</Text>
           </View>
           <Pressable onPress={handleLogout}>
-          <View style={styles.menuText}>
-            <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
-              <FontAwesomeIcon icon={faSignOut} style={{ marginRight: 8 }} color='#CCC' />
-              <Text style={[{ fontSize: 15, }, styles.text]}>Log keluar</Text>
+            <View style={styles.menuText}>
+              <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
+                <FontAwesomeIcon icon={faSignOut} style={{ marginRight: 8 }} color='#CCC' />
+                <Text style={[{ fontSize: 15, }, styles.text]}>Log keluar</Text>
+              </View>
+              <Text style={[styles.text, styles.lebihDariSymbol]}>{">"}</Text>
             </View>
-            <Text style={[styles.text, styles.lebihDariSymbol]}>{">"}</Text>
-          </View>
           </Pressable>
-          
+
 
         </View>
 
@@ -150,6 +153,6 @@ const styles = StyleSheet.create({
   },
   lebihDariSymbol: {
     fontSize: 30,
-    color:'#CCC',
+    color: '#CCC',
   }
 })

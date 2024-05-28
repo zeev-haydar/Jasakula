@@ -17,6 +17,7 @@ import { printAllElements } from '@/utils/formatting'
 import Penjual from '@/models/Penjual'
 import Pengguna from '@/models/Pengguna'
 import Ulasan from '@/models/Ulasan'
+import StackHeader from '@/components/StackHeader'
 
 
 
@@ -100,16 +101,8 @@ const SearchResultScreen = () => {
 
     return (
         <View style={styles.container}>
-            <Stack.Screen options={{
-                headerShown: true, title: `${title ? title : query}`,
-                headerTitleStyle: { fontFamily: 'DM-Sans', fontWeight: 'bold', fontSize: 25 },
-                headerLeft: () => (
-                    <Button onPress={() => router.back()} style={styles.button_container}>
-                        <FontAwesomeIcon icon={faArrowLeft} color='#fff' size={20} style={{ justifyContent: 'center', alignItems: 'center' }} />
-                    </Button>
-
-                ),
-            }} />
+            
+            <StackHeader title={`${title ? title : query}`}/>
             <View style={styles.content}>
 
                 {category === 'true' ? (
