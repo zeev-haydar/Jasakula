@@ -1,7 +1,7 @@
-import { ScrollView, StyleSheet, Text, View, Image, Alert } from 'react-native'
-import React, { useCallback, useMemo, useRef, useState } from 'react'
+import { ScrollView, StyleSheet, Text, View, Image, Alert, BackHandler } from 'react-native'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { GenericStyles } from '@/styles/generic'
-import { Stack, useRouter } from 'expo-router'
+import { Stack, useFocusEffect, useRouter } from 'expo-router'
 import { Button, IconButton, TextInput } from 'react-native-paper'
 import { faArrowLeft, faChevronRight, faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
@@ -12,6 +12,7 @@ import { supabase } from '@/utils/supabase'
 import { useAuth } from '@/providers/AuthProvider'
 import { decode } from 'base64-arraybuffer'
 import { FileObject } from '@supabase/storage-js'
+import { loadImage, handleSaveImage, pickImage } from '@/utils/images'
 
 const UpgradeScreen = () => {
     const router = useRouter();
@@ -22,69 +23,48 @@ const UpgradeScreen = () => {
     const [nickname, setNickname] = useState('');
     const [fullName, setFullName] = useState('');
     const [description, setDescription] = useState('');
+    const [pekerjaan, setPekerjaan] = useState(null);
+    const [keahlian, setKeahlian] = useState(null);
+    const [edukasi, setEdukasi] = useState(null);
+    const [sertifikat, setSertifikat] = useState(null);
 
-    const handleSaveImage = async () => {
-        if (!image || !image.assets || image.assets.length === 0) {
-            // Pastikan ada gambar yang dipilih sebelum melanjutkan
-            Alert.alert("Mana gambarnya?")
-            return;
-        }
-    
-        try {
-            const uri = image.assets[0].uri;
-    
-            // Membaca file gambar dari URI
-            const response = await fetch(uri);
-            const imageBlob = await response.blob();
-    
-            // Menentukan path penyimpanan dengan benar
-            const mimeType = image.assets[0].mimeType as string;
-            const extension = mimeType.split('/')[1];       // get the extension "png" or "jpeg"
-            const filePath = `public/avatars/${auth.session.user.id}.${extension}`;
-    
-            // Mendapatkan metadata gambar
-            
-            const metadata = {
-                contentType: mimeType,
-                upsert: true
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPress = () => {
+                Alert.alert(
+                    "Konfirmasi",
+                    "Apakah Anda yakin ingin kembali? Semua data yang terisi akan hilang.",
+                    [
+                        {
+                            text: "Tidak",
+                            onPress: () => console.log("Cancel Pressed"),
+                            style: "cancel"
+                        },
+                        {
+                            text: "Ya",
+                            onPress: () => {
+                                if (router.canGoBack()) {
+                                    router.back()
+                                    return true;
+                                }
+                                return false;
+                            }
+                        }
+                    ],
+                    { cancelable: false }
+                );
+                return true;
             };
 
-            const arrayBuffer = await new Response(imageBlob).arrayBuffer()
-    
-            // Melakukan unggah gambar ke penyimpanan Supabase
-            const { data, error } = await supabase.storage
-                .from("avatars")
-                .upload(filePath, arrayBuffer, metadata);
-    
-            if (error) {
-                // Mengatasi kesalahan jika terjadi
-                Alert.alert("Error uploading image:", error.message);
-            } else {
-                // Menampilkan pesan sukses jika berhasil diunggah
-                Alert.alert("Image uploaded successfully:", data.path);
-            }
-        } catch (error) {
-            // Menangani kesalahan yang mungkin terjadi selama proses
-            Alert.alert("Error handling image:", error.message);
-        }
-    }
-    
+            BackHandler.addEventListener('hardwareBackPress', onBackPress);
 
-    const pickImage = async () => {
-        // No permissions request is necessary for launching the image library
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
-        });
-
-        console.log(result);
-
-        if (!result.canceled) {
-            setImage(result.assets[0].uri);
-        }
-    };
+            return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+        }, [router])
+    );
+    
+    useEffect(() => {
+        loadImage(setImage, auth.session.user.id);
+    }, []);
 
     const PageInformation = () => {
         const items = [
@@ -111,17 +91,155 @@ const UpgradeScreen = () => {
         );
     }
 
+    const InformasiPribadi = () => (
+        <View style={[styles.pageContent, page !== 1 && { display: 'none' }]}>
+            <View style={{ borderBottomWidth: 1, paddingBottom: 8, marginBottom: 24 }}>
+                <Text style={[GenericStyles.heading1Text, GenericStyles.mainFont]}>Informasi Pribadi</Text>
+            </View>
+            <TextInput
+                label={
+                    <Text style={[GenericStyles.normalText, { fontSize: 12 }, styles.label]}>
+                        Nama Panggilan
+                        <Text style={{ color: 'red' }}> *</Text>
+                    </Text>}
+                style={styles.input}
+                placeholder="Masukkan nama panggilan"
+                placeholderTextColor={'#ccc'}
+                onChangeText={setNickname}
+                underlineColor='transparent'
+                activeUnderlineColor='#71bfd1'
+                onSubmitEditing={() => console.log("Nama panggilan:", nickname)}
+            />
+            <TextInput
+                label={
+                    <Text style={[GenericStyles.mainFont, { fontSize: 12 }, styles.label]}>
+                        Nama Panjang
+                        <Text style={{ color: 'red' }}> *</Text>
+                    </Text>}
+                style={styles.input}
+                placeholder="Masukkan nama panjang"
+                placeholderTextColor={'#ccc'}
+                onChangeText={setFullName}
+                onSubmitEditing={() => console.log("Nama Lengkap:", fullName)}
+                activeUnderlineColor='#71bfd1'
+                underlineColor='transparent'
+            />
+            <TextInput
+                label={
+                    <Text style={[GenericStyles.normalText, { fontSize: 12 }, styles.label]}>
+                        Deskripsi
+                        <Text style={{ color: 'red' }}> *</Text>
+                    </Text>}
+                style={[styles.input, { height: 125, overflow: 'scroll' }]}
+                onChangeText={setDescription}
+                onBlur={() => console.log("Deskripsi:\n", description)}
+                multiline
+                numberOfLines={4}
+                textAlignVertical='top'
+                underlineColor='transparent'
+                activeUnderlineColor='#71bfd1'
+            />
+            <View style={styles.setAvatar}>
+                <Text style={[GenericStyles.mainFont, { marginBottom: 10 }]}>Foto Profil <Text style={{ color: 'red' }}> *</Text></Text>
+                {image?.assets ? (
+                    <Image source={{ uri: image.assets[0].uri }} style={{ width: 160, height: 160, borderRadius: 80 }} />
+                ) : (
+                    image ? (
+                        <Image source={{ uri: image.uri }} style={{ width: 160, height: 160, borderRadius: 80 }} />
+                    ) : (
+                        <View style={{ backgroundColor: '#000', padding: 20, borderRadius: 640, width: 160, height: 160, justifyContent: 'center', alignItems: 'center' }}>
+                            <FontAwesomeIcon icon={faUser} size={80} color='#71BFD1' />
+                        </View>
+                    )
+                )}
+                <Button style={[GenericStyles.boxButtonBlue, { marginTop: 20 }]} onPress={() => pickImage(setImage)}>
+                    <Text style={{ color: "#fff" }}>Unggah Foto</Text>
+                </Button>
+                <Button style={[GenericStyles.boxButtonBlue, { marginTop: 30, marginHorizontal: 30 }]} labelStyle={{ color: "#fff", width: '100%' }} onPress={() => setPage(page + 1)}>
+                    <Text>Selanjutnya</Text>
+                </Button>
+            </View>
+        </View>
+    );
+
     const InformasiProfesi = () => {
         return (
-            <View>
-                <Text>Awuwu</Text>
+            <View style={[{ flex: 1, paddingHorizontal: 12, paddingBottom: 24 }, page !== 2 && { display: 'none' }]}>
+                <View style={{ borderBottomWidth: 1, paddingBottom: 8, marginBottom: 24 }}>
+                    <Text style={[GenericStyles.heading1Text, GenericStyles.mainFont]}>Informasi Profesi</Text>
+                </View>
+                <TextInput
+                    label={
+                        <Text style={[GenericStyles.normalText, { fontSize: 12 }, styles.label]}>
+                            Pekerjaan
+                            <Text style={{ color: 'red' }}> *</Text>
+                        </Text>}
+                    style={styles.input}
+                    placeholder="Masukkan pekerjaan"
+                    placeholderTextColor={'#ccc'}
+                    onChangeText={setPekerjaan}
+                    underlineColor='transparent'
+                    activeUnderlineColor='#71bfd1'
+                    onSubmitEditing={() => console.log("Pekerjaan:", pekerjaan)}
+                />
+                <TextInput
+                    label={
+                        <Text style={[GenericStyles.mainFont, { fontSize: 12 }, styles.label]}>
+                            Keahlian
+                            <Text style={{ color: 'red' }}> *</Text>
+                        </Text>}
+                    style={styles.input}
+                    placeholder="Masukkan keahlian"
+                    placeholderTextColor={'#ccc'}
+                    onChangeText={setKeahlian}
+                    onSubmitEditing={() => console.log("Keahlian:", keahlian)}
+                    activeUnderlineColor='#71bfd1'
+                    underlineColor='transparent'
+                />
+                <TextInput
+                    label={
+                        <Text style={[GenericStyles.normalText, { fontSize: 12 }, styles.label]}>
+                            Deskripsi
+                            <Text style={{ color: 'red' }}> *</Text>
+                        </Text>}
+                    style={[styles.input, { height: 125, overflow: 'scroll' }]}
+                    onChangeText={setDescription}
+                    onBlur={() => console.log("Deskripsi:\n", description)}
+                    multiline
+                    numberOfLines={4}
+                    textAlignVertical='top'
+                    underlineColor='transparent'
+                    activeUnderlineColor='#71bfd1'
+                />
+                <View style={{ marginTop: 30, marginHorizontal: 10, flexDirection: 'row', flex: 1, justifyContent: 'space-evenly' }}>
+                    <Button style={[GenericStyles.boxButtonOrange, { marginRight: 15 }]} labelStyle={{ color: "#fff" }} onPress={() => setPage(page - 1)}>
+                        <Text>Sebelumnya</Text>
+                    </Button>
+                    <Button style={[GenericStyles.boxButtonBlue]} labelStyle={{ color: "#fff" }} onPress={() => setPage(page + 1)}>
+                        <Text>Selanjutnya</Text>
+                    </Button>
+                </View>
+
             </View>
         )
     }
 
     const KeamananAkun = () => {
         return (
-            <View></View>
+            <View style={[{ flex: 1, paddingHorizontal: 12, paddingBottom: 24 }, page !== 3 && { display: 'none' }]}>
+                <View style={{ borderBottomWidth: 1, paddingBottom: 8, marginBottom: 24 }}>
+                    <Text style={[GenericStyles.heading1Text, GenericStyles.mainFont]}>Keamanan Akun</Text>
+                </View>
+                <View style={{ marginTop: 30, marginHorizontal: 10, flexDirection: 'row', flex: 1, justifyContent: 'space-evenly' }}>
+                    <Button style={[GenericStyles.boxButtonOrange, { marginRight: 25 }]} labelStyle={{ color: "#fff" }} onPress={() => setPage(page - 1)}>
+                        <Text>Sebelumnya</Text>
+                    </Button>
+                    <Button style={[GenericStyles.boxButtonBlue]} labelStyle={{ color: "#fff" }} onPress={() => handleSaveImage(image, auth.session.user.id)}>
+                        <Text>Lanjutkan dan Buat Jasamu</Text>
+                    </Button>
+                </View>
+
+            </View>
         )
     }
 
@@ -132,81 +250,12 @@ const UpgradeScreen = () => {
             <KeyboardAwareScrollView
                 contentContainerStyle={{ marginTop: 16 }}
                 keyboardShouldPersistTaps="handled">
-                {page === 1 && (<View style={{ flex: 1, paddingHorizontal: 12, paddingBottom: 24 }}>
-                    <View style={{ borderBottomWidth: 1, paddingBottom: 8, marginBottom: 24 }}>
-                        <Text style={[GenericStyles.heading1Text, GenericStyles.mainFont]}>Informasi Pribadi</Text>
-                    </View>
-                    <TextInput
-                        label={
-                            <Text style={[GenericStyles.normalText, { fontSize: 12 }, styles.label]}>
-                                Nama Panggilan
-                                <Text style={{ color: 'red' }}> *</Text>
-                            </Text>}
-                        style={styles.input}
-                        // ref={nicknameRef}
-                        placeholder="Masukkan nama panggilan"
-                        placeholderTextColor={'#ccc'}
-                        onChangeText={setNickname}
-                        underlineColor='transparent'
-                        activeUnderlineColor='#71bfd1'
-                        onSubmitEditing={() => console.log("Nama panggilan:", nickname)}
-                    />
-                    <TextInput
-                        label={
-                            <Text style={[GenericStyles.mainFont, { fontSize: 12 }, styles.label]}>
-                                Nama Panjang
-                                <Text style={{ color: 'red' }}> *</Text>
-                            </Text>}
-                        style={styles.input}
-                        // ref={fullNameRef}
-                        placeholder="Masukkan nama panjang"
-                        placeholderTextColor={'#ccc'}
-                        onChangeText={setFullName}
-                        onSubmitEditing={() => console.log("Nama Lengkap:", fullName)}
-                        activeUnderlineColor='#71bfd1'
-                        underlineColor='transparent'
-                    />
+                {InformasiPribadi()}
+                {InformasiProfesi()}
+                {KeamananAkun()}
+            </KeyboardAwareScrollView >
 
-
-                    <TextInput
-                        label={
-                            <Text style={[GenericStyles.normalText, { fontSize: 12 }, styles.label]}>
-                                Deskripsi
-                                <Text style={{ color: 'red' }}> *</Text>
-                            </Text>}
-                        style={[styles.input, { height: 125, overflow: 'scroll' }]}
-                        // ref={descriptionRef}
-                        onChangeText={setDescription}
-                        onBlur={() => console.log("Deskripsi:\n", description)}
-                        multiline
-                        numberOfLines={4}
-                        textAlignVertical='top'
-                        underlineColor='transparent'
-                        activeUnderlineColor='#71bfd1'
-                    />
-                    <View style={styles.setAvatar}>
-                        <Text style={[GenericStyles.mainFont, { marginBottom: 10 }]}>Foto Profil <Text style={{ color: 'red' }}> *</Text></Text>
-                        {image ? (
-                            <Image source={{ uri: image }} style={{ width: 160, height: 160, borderRadius: 80 }} />
-                        ) : (
-                            <View style={{ backgroundColor: '#000', padding: 20, borderRadius: 640, width: 160, height: 160, justifyContent: 'center', alignItems: 'center' }}>
-                                <FontAwesomeIcon icon={faUser} size={80} color='#71BFD1' />
-                            </View>
-                        )}
-                        <Button style={[GenericStyles.boxButtonBlue, { marginTop: 20 }]} onPress={pickImage}>
-                            <Text style={{ color: "#fff" }}>Unggah Foto</Text>
-                        </Button>
-                        <Button style={[GenericStyles.boxButtonBlue, {marginTop: 30, width: "100%"}]} onPress={handleSaveImage}>
-                            <Text style={{ color: "#fff" }}>Selanjutnya</Text>
-                        </Button>
-                    </View>
-                </View>
-                )}
-                {/* {page === 2 && <InformasiProfesi />}
-                {page === 3 && <KeamananAkun />} */}
-            </KeyboardAwareScrollView>
-
-        </View>
+        </View >
     )
 }
 
@@ -270,6 +319,9 @@ const styles = StyleSheet.create({
     setAvatar: {
         flex: 1,
         alignItems: 'center'
+    },
+    pageContent: {
+        flex: 1, paddingHorizontal: 12, paddingBottom: 24
     }
 })
 
