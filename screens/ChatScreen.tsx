@@ -9,10 +9,12 @@ import * as Clipboard from 'expo-clipboard';
 import { getTimeOnClock } from '@/utils/formatting';
 import { getMessagesFromChat } from '@/utils/fetch';
 import { supabase } from '@/utils/supabase';
+import { useChatContext } from '@/providers/chat_provider';
 
 
 const ChatScreen = () => {
     const [text, setText] = useState('');
+    const chat = useChatContext()
 
     const [groupedMessages, setGroupedMessages] = useState({});
 
@@ -62,22 +64,16 @@ const ChatScreen = () => {
 
         fetchMessages();
 
-
-        const subscription = supabase
+        supabase
             .channel('public:messages')
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'message' }, payload => {
-                const newMessage = payload.new;
-                if (newMessage.chat_id === slug) {
-                    setMessageData(prevMessages => [...prevMessages, newMessage]);
-                }
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'message' }, async () => {
+                await fetchMessages()
             })
             .subscribe();
 
-        return () => {
-            subscription.unsubscribe();
-        };
     }, [slug]);
 
+    
     useEffect(()=> {
         const grouped = messageData.reduce((groups, message) => {
             const date = new Date(message.sent_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -127,7 +123,7 @@ const ChatScreen = () => {
 
         <View style={styles.container}>
             <Stack.Screen options={{
-                headerShown: true, title: `${slug}`,
+                headerShown: true, title: `${chat.otherPeoplesName}`,
                 headerTitleStyle: { fontFamily: 'DM-Sans', fontWeight: 'bold', fontSize: 25 }
             }} />
             <KeyboardAvoidingView

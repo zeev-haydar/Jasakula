@@ -48,7 +48,8 @@ const ProfileScreen = () => {
   }, [])
 
   useEffect(() => {
-    loadImage(setImage, auth.session.user.id)
+    if (auth.session?.user)
+      loadImage(setImage, auth?.session?.user?.id)
   }, [])
 
   if (loading) {

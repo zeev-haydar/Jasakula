@@ -91,13 +91,12 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <Stack.Screen options={{
         headerShown: true, headerTransparent: true, title: `Selamat Datang, ${session?.user?.user_metadata?.username ?? 'Pengguna'}.`,
-        headerTitleStyle: { fontFamily: 'DM-Sans', fontWeight: 'bold', fontSize: 25 }
+        headerTitleStyle: { fontFamily: 'DMSans_700Bold', fontSize: 25 }
       }} />
       <View style={styles.background_vector}>
         <Vector1 />
       </View>
       <View style={styles.content}>
-        <SearchBar text={text} onChangeText={text => setText(text)} onSubmitEditing={handleSearch} />
         <Text style={styles.welcome_text}>Layanan Jasa Terpopuler</Text>
         <View style={styles.card_grid}>
           <FlatList
@@ -142,15 +141,14 @@ const styles = StyleSheet.create({
     flex: 1,
     // justifyContent: 'center',
     flexDirection: 'column',
-    marginTop: 95,
+    marginTop: 70,
     marginLeft: 17,
     marginRight: 17,
     // alignItems: 'center'
 
   },
   welcome_text: {
-    fontFamily: 'DM-Sans',
-    fontWeight: '400',
+    fontFamily: 'DMSans_400Regular',
     fontSize: 20,
     paddingTop: 40,
     paddingBottom: 20,

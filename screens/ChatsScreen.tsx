@@ -12,9 +12,11 @@ import { supabase } from '@/utils/supabase';
 import { printAllElements } from '@/utils/formatting';
 import { GenericStyles } from '@/styles/generic';
 import { getUserAvatarURI, loadImage } from '@/utils/images';
+import { useChatContext } from '@/providers/chat_provider';
 
 const ChatsScreen = () => {
 
+    const chat = useChatContext();
     const [text, setText] = React.useState("")
     const [nama, setNama] = React.useState("")
     // const [itemData, setItemData] = React.useState([
@@ -44,73 +46,72 @@ const ChatsScreen = () => {
         console.log("dienter");
     };
 
-    useEffect(() => {
-        const fetchChats = async () => {
-            try {
-                const { data, error } = await supabase
-                    .from('chatmember')
-                    .select(`
-                        chat_member_id,
-                        members,
-                        message:last_message_id (
-                            id,
-                            content, 
-                            sent_at
-                        )
-                    `)
-                    .contains('members', [`${auth.session.user.id}`]) // Filter chatmembers where the current user is a member
+    const fetchChats = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('chatmember')
+                .select(`
+                    chat_member_id,
+                    members,
+                    message:last_message_id (
+                        id,
+                        content, 
+                        sent_at
+                    )
+                `)
+                .contains('members', [`${auth.session.user.id}`]) // Filter chatmembers where the current user is a member
 
-                if (error) {
-                    console.error('Error fetching chats:', error)
-                    return
+            if (error) {
+                console.error('Error fetching chats:', error)
+                return
+            }
+
+            const chatDataWithFullNames = await Promise.all(data.map(async (chat) => {
+                // Extract the other member's ID
+                const otherPersonId = chat.members.find(member => member !== auth.session.user.id)
+
+                // Fetch the full_name of the other member
+                const { data: otherPersonData, error: otherPersonError } = await supabase
+                    .from('pengguna')
+                    .select('full_name')
+                    .eq('id', otherPersonId)
+                    .single()
+
+                if (otherPersonError) {
+                    console.error('Error fetching other person data:', otherPersonError)
+                    return { ...chat, otherPersonName: 'Unknown' }
                 }
 
-                const chatDataWithFullNames = await Promise.all(data.map(async (chat) => {
-                    // Extract the other member's ID
-                    const otherPersonId = chat.members.find(member => member !== auth.session.user.id)
+                // add image
+                const imageURI = await getUserAvatarURI(otherPersonId)
 
-                    // Fetch the full_name of the other member
-                    const { data: otherPersonData, error: otherPersonError } = await supabase
-                        .from('pengguna')
-                        .select('full_name')
-                        .eq('id', otherPersonId)
-                        .single()
-
-                    if (otherPersonError) {
-                        console.error('Error fetching other person data:', otherPersonError)
-                        return { ...chat, otherPersonName: 'Unknown' }
-                    }
-
-                    // add image
-                    const imageURI = await getUserAvatarURI(otherPersonId)
-
-                    return { ...chat, otherPersonName: otherPersonData.full_name, imageUrl: imageURI }
-                }))
+                return { ...chat, otherPersonName: otherPersonData.full_name, imageUrl: imageURI }
+            }))
 
 
 
-                // printAllElements(chatDataWithFullNames)
-                setItemData(chatDataWithFullNames)
+            // printAllElements(chatDataWithFullNames)
+            setItemData(chatDataWithFullNames)
 
-            } catch (error) {
-                console.error('Error fetching chats:', error)
-            }
+        } catch (error) {
+            console.error('Error fetching chats:', error)
         }
+    }
 
+    useEffect(() => {
+        
         fetchChats()
 
         // Realtime subscription to update the chat list when new messages arrive
-        const channel = supabase
-            .channel('public:messages')
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'message' }, payload => {
-                fetchChats()
-            })
-            .subscribe()
+        supabase
+        .channel('public:messages')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'message' }, async () => {
+            await fetchChats()
+        })
+        .subscribe() 
 
-        return () => {
-            channel.unsubscribe()
-        }
     }, [])
+
 
     const renderItem = ({ item }) => {
         const lastMessage = item.message ? {
@@ -121,7 +122,7 @@ const ChatsScreen = () => {
 
         return (
             <Link asChild href={`/chats/${item.chat_member_id}`}>
-                <Pressable>
+                <Pressable onPress={()=>chat.changeName(item.otherPersonName)}>
                     <View style={styles.chat}>
                         {item?.imageUrl ?
                             (<Image source={{ uri: item.imageUrl }} width={32} height={32} style={{borderRadius: 128, overflow: 'hidden', marginRight: 12}}/>)
