@@ -1,28 +1,36 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Animated} from 'react-native';
+import { StyleSheet, Text, View, Animated } from 'react-native';
 import HomeScreen from '../screens/HomeScreen';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font'
-import { Redirect } from 'expo-router';
+import { Redirect, router } from 'expo-router';
+import { useFonts } from 'expo-font';
+import { Session } from '@supabase/supabase-js';
+import { supabase } from '@/utils/supabase';
 
-SplashScreen.preventAutoHideAsync();
+// SplashScreen.preventAutoHideAsync();
 
 export default function App() {
 
   const [appIsReady, setAppIsReady] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
 
-  useEffect(()=> {
+  const [fontsLoaded, fontsError] = useFonts({
+    'DM-Sans': require('@/assets/fonts/DM_Sans/DMSans-VariableFont_opsz,wght.ttf')
+  })
+
+  useEffect(() => {
     async function prepare() {
       try {
+        console.log("this was printed")
         fadeOut();
-        // await new Promise(resolve => setTimeout(resolve, 3000));
       }
       catch (e) {
         console.warn(e);
       }
       finally {
-        
+
         setAppIsReady(true);
       }
     }
@@ -41,23 +49,27 @@ export default function App() {
   };
 
   const onLayoutRootView = useCallback(async () => {
-    if (appIsReady) {
+    if (appIsReady && (fontsLoaded || fontsError)) {
       await SplashScreen.hideAsync();
     }
-  }, [appIsReady]);
+  }, [appIsReady, fontsLoaded, fontsError]);
 
   if (!appIsReady) {
     return null;
   }
+  if (!fontsLoaded) return null
 
   return (
-    <View style={styles.container} onLayout={onLayoutRootView}>
-      <Animated.View style={{ opacity: fadeAnim }}>
-    </Animated.View>
-    <Redirect href={"/(tabs)/home"}/>
-    </View>
-    
-    
+    <>
+      <View style={styles.container} onLayout={onLayoutRootView}>
+        <Animated.View style={{ opacity: fadeAnim }}>
+        </Animated.View>
+      </View>
+      <Redirect href={"/(tabs)/home"} />
+    </>
+
+
+
   );
 }
 
