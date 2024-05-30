@@ -7,6 +7,8 @@ import { TextInput, TouchableRipple } from 'react-native-paper';
 import { useAuth } from '@/providers/AuthProvider';
 import * as Clipboard from 'expo-clipboard';
 import { getTimeOnClock } from '@/utils/formatting';
+import { getMessagesFromChat } from '@/utils/fetch';
+import { supabase } from '@/utils/supabase';
 
 
 const ChatScreen = () => {
@@ -16,15 +18,17 @@ const ChatScreen = () => {
 
     const auth = useAuth();
     const scrollViewRef = useRef(null);
+    const { slug } = useLocalSearchParams();
 
-    const [messageData, setMessageData] = useState([
-        { message: "Selamat Hari Raya Idul Fitri!! Mohon maaf lahir dan batin", sent_at: "2023-11-19T12:00:00Z", pengguna_id: auth.session.user.id },
-        { message: "KONTROOLL!!!", sent_at: "2023-11-19T12:05:00Z", pengguna_id: auth.session.user.id },
-        { message: "Merry Kurisumasu", sent_at: "2023-12-25T10:00:00Z", pengguna_id: "2" },
-        { message: "Pinjem Duitmu seratus", sent_at: "2023-12-25T10:15:00Z", pengguna_id: "2" },
-        { message: "Darupanmu wi lho, ncen wuelik tenan", sent_at: "2024-02-04T14:00:00Z", pengguna_id: "2" },
-        { message: "AOWKOAWKOAWKOAKWOAWKOAWK", sent_at: "2024-03-11T09:00:00Z", pengguna_id: auth.session.user.id }
-    ]);
+    // const [messageData, setMessageData] = useState([
+    //     { content: "Selamat Hari Raya Idul Fitri!! Mohon maaf lahir dan batin", sent_at: "2023-11-19T12:00:00Z", pengguna_id: auth.session.user.id },
+    //     { content: "KONTROOLL!!!", sent_at: "2023-11-19T12:05:00Z", pengguna_id: auth.session.user.id },
+    //     { content: "Merry Kurisumasu", sent_at: "2023-12-25T10:00:00Z", pengguna_id: "2" },
+    //     { content: "Pinjem Duitmu seratus", sent_at: "2023-12-25T10:15:00Z", pengguna_id: "2" },
+    //     { content: "Darupanmu wi lho, ncen wuelik tenan", sent_at: "2024-02-04T14:00:00Z", pengguna_id: "2" },
+    //     { content: "AOWKOAWKOAWKOAKWOAWKOAWK", sent_at: "2024-03-11T09:00:00Z", pengguna_id: auth.session.user.id }
+    // ]);
+    const [messageData, setMessageData] = useState([]);
 
     useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
@@ -37,6 +41,44 @@ const ChatScreen = () => {
     }, []);
 
     useEffect(() => {
+        // fetch the messageData
+        const fetchMessages = async () => {
+            try {
+                const { data: messages, error } = await supabase
+                    .from('message')
+                    .select('*')
+                    .eq('chat_id', slug)
+                    .order('sent_at', { ascending: true });
+
+                if (error) {
+                    console.error('Error fetching messages:', error);
+                } else {
+                    setMessageData(messages);
+                }
+            } catch (error) {
+                console.error('Error fetching messages:', error);
+            }
+        };
+
+        fetchMessages();
+
+
+        const subscription = supabase
+            .channel('public:messages')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'message' }, payload => {
+                const newMessage = payload.new;
+                if (newMessage.chat_id === slug) {
+                    setMessageData(prevMessages => [...prevMessages, newMessage]);
+                }
+            })
+            .subscribe();
+
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, [slug]);
+
+    useEffect(()=> {
         const grouped = messageData.reduce((groups, message) => {
             const date = new Date(message.sent_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
             if (!groups[date]) {
@@ -46,31 +88,40 @@ const ChatScreen = () => {
             return groups;
         }, {});
         setGroupedMessages(grouped);
-    }, [messageData]);
+    }, [messageData])
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (text && text.length > 0) {
             const newMessage = {
-                message: text,
+                content: text,
                 sent_at: new Date().toISOString(),
                 pengguna_id: auth.session.user.id,
+                chat_id: slug,
             }
-            setMessageData(prevMessages => [...prevMessages, newMessage]);
-            setText('');
-            scrollViewRef.current?.scrollToEnd({ animated: true });
+            try {
+                const { data, error } = await supabase
+                    .from('message')
+                    .insert([newMessage]);
+
+                if (error) {
+                    console.error('Error adding message:', error);
+                    Alert.alert("Error", "Could not send message. Please try again.");
+                } else {
+                    setText('');
+                    scrollViewRef.current?.scrollToEnd({ animated: true });
+                }
+            } catch (error) {
+                console.error('Error adding message:', error);
+            }
         }else{
             Alert.alert("Berikan pesan yang valid!")
         }
     }
-
     const copyToClipboard = (message) => {
         Clipboard.setStringAsync(message).then(() => {
             Alert.alert("Copied to clipboard", message);
         });
     };
-
-
-    const { slug } = useLocalSearchParams();
     return (
 
 
@@ -99,10 +150,10 @@ const ChatScreen = () => {
                             </View>
                             {groupedMessages[date].map((message, idx) => (
     
-                                    <TouchableRipple key={idx} onLongPress={() => copyToClipboard(message.message)} style={styles.messageContainer}>
+                                    <TouchableRipple key={idx} onLongPress={() => copyToClipboard(message.content)} style={styles.messageContainer}>
                                         <View style={message.pengguna_id === auth.session.user.id ? styles.ownMessage : styles.othersMessage}>
 
-                                            <Text style={{flex: 1, fontFamily: 'DMSans_400Regular', alignSelf: 'center',}}>{message.message}</Text>
+                                            <Text style={{flex: 1, fontFamily: 'DMSans_400Regular', alignSelf: 'center',}}>{message.content}</Text>
                                             <View style={{marginRight: 8}}/>
                                             <Text style={{textAlignVertical: 'bottom', fontFamily: 'DMSans_400Regular', fontSize: 10, color: 'rgba(0, 0, 0, 0.49)'}}>{getTimeOnClock(message.sent_at)}</Text>
 

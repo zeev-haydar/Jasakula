@@ -72,7 +72,10 @@ const GenericStyles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 4
-    }
+    },
+    boldFont: {
+        fontFamily: 'DMSans_700Bold'
+    },
 })
 
 export {GenericStyles}
