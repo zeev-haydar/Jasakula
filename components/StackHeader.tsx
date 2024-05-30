@@ -5,13 +5,14 @@ import { GenericStyles } from '@/styles/generic';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { IconButton } from 'react-native-paper';
+import { DMSans_500Medium } from '@expo-google-fonts/dm-sans';
 
 const StackHeader = ({ title }) => {
     const router = useRouter();
     return (
         <Stack.Screen options={{
             headerShown: true, title: title,
-            headerTitleStyle: { fontFamily: 'DMSans_700Bold', fontSize: 25 },
+            headerTitleStyle: { fontFamily: 'DMSans_700Bold', fontSize: 20 },
             headerLeft: () => (
                 <View style={GenericStyles.buttonContainer}>
                     <IconButton
@@ -21,7 +22,7 @@ const StackHeader = ({ title }) => {
                                 color='#fff' size={20} style={{
                                     justifyContent: 'center',
                                     alignItems: 'center',
-                                    padding: 12
+                                    padding: 10
                                 }}
                             />
                         )}/>

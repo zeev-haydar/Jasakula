@@ -196,19 +196,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  inputBox: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 10,
-    width: '80%',
-    alignItems: 'center',
-  },
-  inputText: {
-    width: '100%',
-    marginBottom: 20,
-    padding: 10,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 5,
-  }
+
 })

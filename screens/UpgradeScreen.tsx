@@ -28,7 +28,6 @@ const UpgradeScreen = () => {
     const [pekerjaan, setPekerjaan] = useState(null);
     const [selectedLevelPengalaman, setLevelPengalaman] = useState('');
     const [showEdukasiDropDown, setShowEdukasiDropDown] = useState([]);
-
     const [keahlian, setKeahlian] = useState('')
     const [edukasiList, setEdukasiList] = useState(['']);
     const [sertifikatList, setSertifikatList] = useState<Array<string>>([''])
@@ -487,11 +486,11 @@ const UpgradeScreen = () => {
             <KeyboardAwareScrollView
                 contentContainerStyle={{ marginTop: 16 }}
                 keyboardShouldPersistTaps="handled">
+            </KeyboardAwareScrollView>
                 {InformasiPribadi()}
                 {InformasiProfesi()}
                 {KeamananAkun()}
             </KeyboardAwareScrollView >
-
         </View >
     )
 }

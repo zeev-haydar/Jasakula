@@ -108,6 +108,7 @@ const ProfileScreen = () => {
             <Text style={[styles.text, styles.lebihDariSymbol]}>{">"}</Text>
 
           </View>
+          <Link asChild href={"/profile/jasa"}>
           <View style={styles.menuText}>
             <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
               <FontAwesomeIcon icon={faHammer} style={{ marginRight: 8 }} color='#CCC' />
@@ -115,6 +116,7 @@ const ProfileScreen = () => {
             </View>
             <Text style={[styles.text, styles.lebihDariSymbol]}>{">"}</Text>
           </View>
+          </Link>
           <Pressable onPress={handleLogout}>
             <View style={styles.menuText}>
               <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
