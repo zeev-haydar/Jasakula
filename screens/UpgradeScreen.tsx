@@ -29,33 +29,33 @@ const UpgradeScreen = () => {
             Alert.alert("Mana gambarnya?")
             return;
         }
-    
+
         try {
             const uri = image.assets[0].uri;
-    
+
             // Membaca file gambar dari URI
             const response = await fetch(uri);
             const imageBlob = await response.blob();
-    
+
             // Menentukan path penyimpanan dengan benar
             const mimeType = image.assets[0].mimeType as string;
             const extension = mimeType.split('/')[1];       // get the extension "png" or "jpeg"
             const filePath = `public/avatars/${auth.session.user.id}.${extension}`;
-    
+
             // Mendapatkan metadata gambar
-            
+
             const metadata = {
                 contentType: mimeType,
                 upsert: true
             };
 
             const arrayBuffer = await new Response(imageBlob).arrayBuffer()
-    
+
             // Melakukan unggah gambar ke penyimpanan Supabase
             const { data, error } = await supabase.storage
                 .from("avatars")
                 .upload(filePath, arrayBuffer, metadata);
-    
+
             if (error) {
                 // Mengatasi kesalahan jika terjadi
                 Alert.alert("Error uploading image:", error.message);
@@ -68,7 +68,7 @@ const UpgradeScreen = () => {
             Alert.alert("Error handling image:", error.message);
         }
     }
-    
+
 
     const pickImage = async () => {
         // No permissions request is necessary for launching the image library
@@ -196,7 +196,7 @@ const UpgradeScreen = () => {
                         <Button style={[GenericStyles.boxButtonBlue, { marginTop: 20 }]} onPress={pickImage}>
                             <Text style={{ color: "#fff" }}>Unggah Foto</Text>
                         </Button>
-                        <Button style={[GenericStyles.boxButtonBlue, {marginTop: 30, width: "100%"}]} onPress={handleSaveImage}>
+                        <Button style={[GenericStyles.boxButtonBlue, { marginTop: 30, width: "100%" }]} onPress={handleSaveImage}>
                             <Text style={{ color: "#fff" }}>Selanjutnya</Text>
                         </Button>
                     </View>
