@@ -105,7 +105,7 @@ const JasaScreen = () => {
                         <View style={styles.information}>
                             {React.Children.map([
                                 <Text style={[styles.text, styles.nama]} key="nama">{data[0].nama}</Text>,
-                                <Text style={[styles.text, styles.rating]} key="rating">★ {data[0].rating}</Text>,
+                                <Text style={[styles.text, styles.rating]} key="rating">★ {Math.round(data[0].rating*100)/100}</Text>,
                                 <Text style={[styles.text, styles.deskripsi]} key="deskripsi">{data[0].deskripsi}</Text>,
                             ], child => (
                                 React.cloneElement(child, { style: [child.props.style, { paddingBottom: 8 }] })

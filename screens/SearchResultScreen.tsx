@@ -138,7 +138,7 @@ const SearchResultScreen = () => {
                                             id={jasa.id}
                                             source={require('@/assets/images/placeholder-design.png')}
                                             nama={jasa.nama}
-                                            rating={jasa.rating}
+                                            rating={Math.round(jasa.rating*100)/100}
                                             harga={jasa.harga}
                                         />
                                     );
