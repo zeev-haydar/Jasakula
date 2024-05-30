@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '@/utils/supabase';
 
-export const handleSaveImage = async (image, userId) => {
+export const handleSaveImage = async (image, userId, bucket='avatars') => {
     if (!image) {
         return "Mana gambarnya?";
         Alert.alert("Mana gambarnya?");
@@ -31,7 +31,7 @@ export const handleSaveImage = async (image, userId) => {
         const arrayBuffer = await new Response(imageBlob).arrayBuffer();
 
         const { data, error } = await supabase.storage
-            .from("avatars")
+            .from(bucket)
             .upload(filePath, arrayBuffer, metadata);
 
         if (error) {

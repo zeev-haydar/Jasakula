@@ -11,6 +11,7 @@ import { useAuth } from '@/providers/AuthProvider'
 import StackHeader from '@/components/StackHeader'
 import { GenericStyles } from '@/styles/generic'
 import { setUrlAsync } from 'expo-clipboard'
+import { handleSaveImage } from '@/utils/images'
 
 
 
@@ -28,8 +29,7 @@ const TambahJasaScreen = () => {
 
     const router = useRouter();
     const handleSubmit = async () => {
-        handleSaveImage()
-        console.log(nama,kategori,url2,harga,deskripsi,idPenjual)
+        console.log(nama, kategori, url2, harga, deskripsi, idPenjual)
         if (!nama || !kategori || !image || !harga || !deskripsi) {
             Alert.alert("Semua kolom harus diisi!");
             return;
@@ -44,12 +44,12 @@ const TambahJasaScreen = () => {
 
             const { data, error } = await supabase
                 .from('jasa')
-                .insert([{ 
-                    nama, 
-                    jenis: kategori, 
-                    url_gambar: url2, 
-                    harga, 
-                    deskripsi, 
+                .insert([{
+                    nama,
+                    jenis: kategori,
+                    url_gambar: url2,
+                    harga,
+                    deskripsi,
                     penjual_id: idPenjual
                 }]);
 
@@ -57,6 +57,13 @@ const TambahJasaScreen = () => {
                 Alert.alert("Error inserting data:", error.message);
                 console.log(error.message)
             } else {
+                const error = await handleSaveImage(image, auth?.session?.user.id, "images")
+                if (error) {
+                    Alert.alert("Error inserting data:", error);
+                    console.log(error)
+                    return;
+                }
+                console.log("apalah")
                 Alert.alert("Data berhasil disimpan!");
                 setNama('');
                 setKategori('');
@@ -69,74 +76,28 @@ const TambahJasaScreen = () => {
             Alert.alert("Error handling data:", error.message);
         }
     };
-    const handleSaveImage = async () => {
-        if (!image || !image.assets || image.assets.length === 0) {
-            // Pastikan ada gambar yang dipilih sebelum melanjutkan
-            Alert.alert("Mana gambarnya?")
-            return;
-        }
-
-        try {
-            const uri = image.assets[0].uri;
-
-            // Membaca file gambar dari URI
-            const response = await fetch(uri);
-            const imageBlob = await response.blob();
-
-            // Menentukan path penyimpanan dengan benar
-            const mimeType = image.assets[0].mimeType as string;
-            const extension = mimeType.split('/')[1];       // get the extension "png" or "jpeg"
-            const filePath = `public/avatars/${url}.${extension}`;
-            
-
-            // Mendapatkan metadata gambar
-
-            const metadata = {
-                contentType: mimeType,
-                upsert: true
-            };
-
-            const arrayBuffer = await new Response(imageBlob).arrayBuffer()
-
-            // Melakukan unggah gambar ke penyimpanan Supabase
-            const { data, error } = await supabase.storage
-                .from("avatars")
-                .upload(filePath, arrayBuffer, metadata);
-
-            if (error) {
-                // Mengatasi kesalahan jika terjadi
-                Alert.alert("Error uploading image:", error.message);
-            } else {
-                // Menampilkan pesan sukses jika berhasil diunggah
-                Alert.alert("Image uploaded successfully:", data.path);
-            }
-        } catch (error) {
-            // Menangani kesalahan yang mungkin terjadi selama proses
-            Alert.alert("Error handling image:", error.message);
-        }
-    }
 
 
 
     const fetchData = async () => {
         const { data, error } = await supabase
-          .from('penjual')
-          .select(' id , pengguna_id')
-          .eq('pengguna_id', auth.session?.user?.id)
+            .from('penjual')
+            .select(' id , pengguna_id')
+            .eq('pengguna_id', auth.session?.user?.id)
         if (error) {
-          console.error('Error fetching items:', error);
+            console.error('Error fetching items:', error);
         } else {
-console.log(auth.session?.user?.id)
-          setIdPenjual(data[0].id);
+            console.log(auth.session?.user?.id)
+            setIdPenjual(data[0].id);
 
         }
-      };
+    };
 
     useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener(
             'keyboardDidShow',
             () => {
-                console.log("Keyboard muncul")
+                // console.log("Keyboard muncul")
                 scrollViewRef.current?.setNativeProps({
                     // contentInset: { bottom: 250 },
                 });
@@ -146,13 +107,13 @@ console.log(auth.session?.user?.id)
         const keyboardDidHideListener = Keyboard.addListener(
             'keyboardDidHide',
             () => {
-                console.log("Keyboard hilang")
+                // console.log("Keyboard hilang")
                 scrollViewRef.current?.setNativeProps({
                     // contentInset: { bottom: 0 },
                 });
             }
         );
-fetchData()
+        fetchData()
         return () => {
             keyboardDidShowListener.remove();
             keyboardDidHideListener.remove();
@@ -161,9 +122,9 @@ fetchData()
 
     useEffect(() => {
 
-      }, [idPenjual]);
+    }, [idPenjual]);
 
-      const pickImage = async () => {
+    const pickImage = async () => {
         // No permissions request is necessary for launching the image library
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -186,6 +147,7 @@ fetchData()
 
 
         <SafeAreaView style={{ flex: 1, paddingBottom: 24 }}>
+            <StackHeader title={"Menu Tambahkan Jasa"} />
             <ScrollView
                 contentContainerStyle={styles.contentStyle}
                 keyboardShouldPersistTaps="handled"
@@ -193,16 +155,16 @@ fetchData()
 
             >
                 <KeyboardAvoidingView
-                    style={{ flex: 1, flexDirection: 'column' }}
+                    style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-end', }}
                     behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                     keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 150}
                     enabled
                 >
-                    <StackHeader title={"Menu Tambahkan Jasa"} />
+
                     <View>
-                        <View style={{ flexDirection: 'row', marginVertical: 20, marginHorizontal: 20 }}>
+                        <View style={{ flexDirection: 'row', marginHorizontal: 20 }}>
                             <Text style={{ fontSize: 20, fontFamily: 'DM-Sans', paddingTop: 6 }}>
-Overview
+                                Overview
                             </Text>
 
                         </View>
@@ -224,11 +186,15 @@ Overview
                                 {image ? (
                                     <Image source={{ uri: image }} style={[styles.input, { height: 250, justifyContent: "center", alignItems: "center" }]} />
                                 ) : (
-                                    <View style={[styles.input, { height: 250, justifyContent: "center", alignItems: "center" }]}><Text style={{color: "#CFCECE", textAlign: "center"}}>Tambahkan gambar yang relevan dengan konten yang ada pada jasa anda</Text></View>
+                                    <View style={[styles.input, { height: 250, justifyContent: "center", alignItems: "center" }]}><Text style={{ color: "#CFCECE", textAlign: "center" }}>Tambahkan gambar yang relevan dengan konten yang ada pada jasa anda</Text></View>
                                 )}
-                                <Button style={[GenericStyles.boxButtonBlue, { marginTop: 20 }]} onPress={pickImage}>
-                                    <Text style={{ color: "#fff" }}>Unggah Foto</Text>
-                                </Button>
+                                <View style={{ marginTop: 20 }}>
+                                    <TouchableOpacity style={[GenericStyles.boxButtonBlue, { alignItems: 'center', justifyContent: 'center' }]} onPress={pickImage}>
+                                        <Text style={{ color: "#fff", lineHeight: 40, textAlignVertical: 'center' }}>Unggah Foto</Text>
+                                    </TouchableOpacity>
+                                </View>
+
+
                             </View>
                             <Text style={{ marginVertical: 10 }}>
                                 Katagori
@@ -295,7 +261,8 @@ const styles = StyleSheet.create({
         marginVertical: 5,
     },
     contentStyle: {
-        flex: 1,
+        flexGrow: 1,
+        width: '100%',
     },
     line: {
         width: '90%',

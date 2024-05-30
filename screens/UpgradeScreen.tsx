@@ -486,7 +486,6 @@ const UpgradeScreen = () => {
             <KeyboardAwareScrollView
                 contentContainerStyle={{ marginTop: 16 }}
                 keyboardShouldPersistTaps="handled">
-            </KeyboardAwareScrollView>
                 {InformasiPribadi()}
                 {InformasiProfesi()}
                 {KeamananAkun()}

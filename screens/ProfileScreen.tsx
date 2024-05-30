@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Image } from 'react-native'
+import { View, Text, Pressable, Image, TouchableOpacity } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { StyleSheet } from 'react-native'
 import { Link, Stack, useRouter } from 'expo-router'
@@ -72,7 +72,7 @@ const ProfileScreen = () => {
             <View style={{ marginRight: 12, backgroundColor: '#000', width: 35, height: 35, padding: 6, alignItems: 'center', overflow: 'hidden', justifyContent: 'center', borderRadius: 128 }}>
               {
                 image?.uri ? (
-                  <Image source={{ uri: image.uri }} style={{ width: 35, height: 35,  }} />
+                  <Image source={{ uri: image.uri }} style={{ width: 35, height: 35, }} />
                 ) : (
                   <FontAwesomeIcon icon={faUser} size={20} color='#71BFD1' />
                 )
@@ -109,13 +109,18 @@ const ProfileScreen = () => {
 
           </View>
           <Link asChild href={"/profile/jasa"}>
-          <View style={styles.menuText}>
-            <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
-              <FontAwesomeIcon icon={faHammer} style={{ marginRight: 8 }} color='#CCC' />
-              <Text style={[{ fontSize: 15, }, styles.text]}>Jasaku</Text>
-            </View>
-            <Text style={[styles.text, styles.lebihDariSymbol]}>{">"}</Text>
-          </View>
+            <TouchableOpacity style={{ flex: 0 }}>
+              <View style={styles.menuText}>
+
+                <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
+                  <FontAwesomeIcon icon={faHammer} style={{ marginRight: 8 }} color='#CCC' />
+                  <Text style={[{ fontSize: 15, }, styles.text]}>Jasaku</Text>
+                </View>
+                <Text style={[styles.text, styles.lebihDariSymbol]}>{">"}</Text>
+
+
+              </View>
+            </TouchableOpacity>
           </Link>
           <Pressable onPress={handleLogout}>
             <View style={styles.menuText}>

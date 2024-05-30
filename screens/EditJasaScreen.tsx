@@ -14,7 +14,7 @@ const EditJasaScreen = () => {
 
 
     <View style={styles.item}>
-      <Image source={{ uri: item.url_gambar }} style={styles.image} />
+      <Image source={{ uri: item.url_gambar.length > 0 ? item.url_gambar : 'https://asset.kompas.com/crops/ZooJx7Zw6jqaVJeVsWEEVyOkor0=/27x0:863x558/750x500/data/photo/2023/02/18/63f02d9393e94.jpg' }} style={styles.image} />
 
       <View style={{ padding: 6 }}>
         <Text>{item.nama}</Text>
@@ -48,13 +48,13 @@ const EditJasaScreen = () => {
     router.replace('/profile/jasa/add')
   };
   return (
-    <View >
+    <View style={{flex: 1}}>
       <StackHeader title={"Menu Tambahkan Jasa"} />
-      <View style={{ flexDirection: 'row', marginVertical: 20, marginHorizontal: 20 }}>
+      <View style={{ flexDirection: 'row', marginVertical: 20, paddingHorizontal: 20, width: '100%', justifyContent: 'space-between'}}>
         <Text style={{ fontSize: 20, fontFamily: 'DM-Sans', paddingTop: 6 }}>
           Jasa Anda
         </Text>
-        <View style={{ paddingLeft: 140 }}>
+        <View style={{ paddingLeft: 20}}>
           <TouchableOpacity style={styles.greenButton} onPress={handleButtonPress}>
             <Text style={{ color: 'white', fontFamily: 'DM-Sans', fontSize: 14 }}>Buat Jasa Baru</Text>
           </TouchableOpacity>
