@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import { Slot, Stack, useRouter } from 'expo-router'
 import { supabase } from '@/utils/supabase'
 import { AuthProvider, useAuth } from '@/providers/AuthProvider'
+import { ChatProvider } from '@/providers/chat_provider'
 
 const _layout = () => {
     const router = useRouter();
@@ -12,7 +13,8 @@ const _layout = () => {
     }, [])
 
     return (
-        <Stack
+        <ChatProvider>
+            <Stack
             screenOptions={{
                 headerStyle: {
                     backgroundColor: '#71BFD1',
@@ -26,6 +28,8 @@ const _layout = () => {
             }}
         />
 
+        </ChatProvider>
+        
     )
 }
 

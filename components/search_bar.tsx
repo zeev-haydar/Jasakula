@@ -6,14 +6,14 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { Link, Redirect } from 'expo-router';
 import { useNavigation } from 'expo-router';
 
-const SearchBar = ({ onSubmitEditing = () => { } , onChangeText, text}) => {
+const SearchBar = ({ onSubmitEditing = () => { } , onChangeText, text, placeholder='Cari Jasa'}) => {
     
 
 
     return (
         <TextInput
             value={text}
-            placeholder='Cari Jasa'
+            placeholder={placeholder}
             onChangeText={onChangeText}
             left={<TextInput.Icon icon={() => <Icon name="search" size={16} />} />}
             underlineColor='transparent'

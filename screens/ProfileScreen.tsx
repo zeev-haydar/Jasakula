@@ -1,18 +1,24 @@
-import { View, Text, Pressable } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, Pressable, Image } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
 import { StyleSheet } from 'react-native'
 import { Link, Stack, useRouter } from 'expo-router'
-import { Button } from 'react-native-paper'
+import { ActivityIndicator, Button } from 'react-native-paper'
 import { supabase } from '@/utils/supabase'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Vector1 from '../assets/styling/vector_1.svg'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faUser, faGear, faHammer, faSignOut } from '@fortawesome/free-solid-svg-icons'
 import { useAuth } from '@/providers/AuthProvider'
+import { loadImage } from '@/utils/images'
+import { GenericStyles } from '@/styles/generic'
 
 const ProfileScreen = () => {
   const router = useRouter();
   const auth = useAuth();
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isSeller, setIsSeller] = useState(false);
+  const [image, setImage] = useState(null)
   const handleLogout = async () => {
     console.log('dipencet')
     const { error } = await supabase.auth.signOut()
@@ -21,7 +27,37 @@ const ProfileScreen = () => {
       return
     }
     console.log("berhasil logout")
-    router.replace("/login")
+    router.replace("/home")
+  }
+
+  useEffect(() => {
+    const fetchPengguna = async () => {
+      const { data, error } = await supabase.from('pengguna').select('*').eq('id', auth.session?.user?.id).single()
+      if (error) {
+        console.error(error)
+        return;
+      }
+
+      setData(data);
+      setIsSeller(data?.role === 'penjual');
+      console.log(data)
+      setLoading(false);
+    }
+
+    fetchPengguna();
+  }, [])
+
+  useEffect(() => {
+    if (auth.session?.user)
+      loadImage(setImage, auth?.session?.user?.id)
+  }, [])
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </SafeAreaView>
+    );
   }
 
   return (
@@ -33,21 +69,29 @@ const ProfileScreen = () => {
         <Stack.Screen options={{ headerShown: false, title: "Profile" }} />
         <View style={styles.topProfileHeader}>
           <View style={styles.topProfile}>
-            <View style={{ marginRight: 12, backgroundColor: '#000', padding: 6, borderRadius: 128 }}>
-              <FontAwesomeIcon icon={faUser} size={20} color='#71BFD1' />
+            <View style={{ marginRight: 12, backgroundColor: '#000', width: 35, height: 35, padding: 6, alignItems: 'center', overflow: 'hidden', justifyContent: 'center', borderRadius: 128 }}>
+              {
+                image?.uri ? (
+                  <Image source={{ uri: image.uri }} style={{ width: 35, height: 35,  }} />
+                ) : (
+                  <FontAwesomeIcon icon={faUser} size={20} color='#71BFD1' />
+                )
+              }
             </View>
-            <Text style={[styles.text, styles.bold, styles.normalTextSize]}>{auth.session.user.user_metadata.username}</Text>
+            <Text style={[GenericStyles.boldFont, styles.normalTextSize]}>{auth.session.user?.user_metadata?.username || ''}</Text>
           </View>
-          <Link asChild href={"/profile/upgrade"}>
-            <Button style={{ flex: 0, backgroundColor: '#000', borderRadius: 10 }}>
-              <Text style={[styles.text, styles.bold, { color: '#fff' }, styles.normalTextSize]}> Upgrade to Seller</Text>
-            </Button>
-          </Link>
+          {!isSeller && (
+            <Link asChild href={"/profile/upgrade"}>
+              <Button style={{ flex: 0, backgroundColor: '#000', borderRadius: 10 }}>
+                <Text style={[styles.text, styles.bold, { color: '#fff' }, styles.normalTextSize]}> Upgrade to Seller</Text>
+              </Button>
+            </Link>
+          )}
 
         </View>
 
         <View style={styles.textContainer}>
-          <Text style={{ fontSize: 20, fontFamily: 'DM-Sans', fontWeight: 'bold', paddingBottom: 24, borderBottomWidth: 0.3, borderBottomColor: "#CFCECE" }}>Jasakula</Text>
+          <Text style={{ fontSize: 20, fontFamily: 'DMSans_700Bold', paddingBottom: 24, borderBottomWidth: 0.3, borderBottomColor: "#CFCECE" }}>Jasakula</Text>
           <View style={styles.menuText}>
             <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
               <FontAwesomeIcon icon={faUser} style={{ marginRight: 8 }} color='#CCC' />
