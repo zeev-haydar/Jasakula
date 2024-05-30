@@ -35,4 +35,14 @@ function formatWithDate(timestamptz: string | number | Date) {
   return `${tanggal} ${namaBulan} ${tahun}`;
 }
 
-export { formatPrice, printAllElements, formatWithDate }
+function getTimeOnClock(timestamptz: string) {
+  const hours = new Date(timestamptz).getHours()
+  const minutes = new Date(timestamptz).getMinutes()
+
+  const formattedHours = hours.toString().padStart(2, '0');
+  const formattedMinutes = minutes.toString().padStart(2, '0');
+
+  return `${formattedHours}:${formattedMinutes}`
+}
+
+export { formatPrice, printAllElements, formatWithDate, getTimeOnClock }

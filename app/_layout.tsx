@@ -3,9 +3,10 @@ import { CategoryProvider } from "../providers/CategoryProvider";
 import { SafeAreaView } from "react-native-safe-area-context"
 import { JasaProvider } from "@/providers/JasaProvider";
 import { AuthProvider } from "@/providers/AuthProvider";
-import {useFonts, DMSans_400Regular, DMSans_700Bold} from '@expo-google-fonts/dm-sans';
+import { useFonts, DMSans_400Regular, DMSans_700Bold } from '@expo-google-fonts/dm-sans';
 
 import DM_Sans from '@expo-google-fonts/dm-sans';
+import { Provider } from "react-native-paper";
 
 export default function AppLayout() {
 
@@ -16,10 +17,11 @@ export default function AppLayout() {
 
     if (!fontsLoaded && !fontsError) {
         return null;
-      }
-    
+    }
+
 
     return (
+        <Provider>
             <AuthProvider>
                 <CategoryProvider>
                     <JasaProvider>
@@ -27,6 +29,7 @@ export default function AppLayout() {
                     </JasaProvider>
                 </CategoryProvider>
             </AuthProvider>
+        </Provider>
     );
 
 }

@@ -56,6 +56,22 @@ const GenericStyles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 4
+    },
+    boxButtonGreen: {
+        backgroundColor: '#10AB71',
+        elevation: 2,
+        padding: 2,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 4
+    },
+    boxButtonRed: {
+        backgroundColor: '#FF6347',
+        elevation: 2,
+        padding: 2,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 4
     }
 })
 

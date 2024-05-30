@@ -30,7 +30,6 @@ const ChatsScreen = () => {
         { id: 6, nama: "Haidar", lastMessage: "Susahe wong kere", lastMessageDate: "17/08/1945" },
         { id: 7, nama: "Haidar", lastMessage: "Arep nyanding tresna", lastMessageDate: "17/08/1945" },
         { id: 8, nama: "Haidar", lastMessage: "Kalah karo bandha", lastMessageDate: "17/08/1945" },
-        { id: 9, nama: "Haidar", lastMessage: "Kimcil Kepolen By NHPW A.K.A", lastMessageDate: "17/08/1945" },
     ]
 
     const router = useRouter();

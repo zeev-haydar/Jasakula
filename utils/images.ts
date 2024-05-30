@@ -5,11 +5,12 @@ import { supabase } from '@/utils/supabase';
 
 export const handleSaveImage = async (image, userId) => {
     if (!image) {
+        return "Mana gambarnya?";
         Alert.alert("Mana gambarnya?");
-        return;
+        
     } else {
         if (image.uri) {
-            return;
+            return null;
         }
     }
 
@@ -34,8 +35,11 @@ export const handleSaveImage = async (image, userId) => {
             .upload(filePath, arrayBuffer, metadata);
 
         if (error) {
+            return error.message
             Alert.alert("Error uploading image:", error.message);
+            
         } else {
+            return null
             Alert.alert("Image uploaded successfully:", data.path);
         }
     } catch (error) {
