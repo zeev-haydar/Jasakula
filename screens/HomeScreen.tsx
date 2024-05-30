@@ -60,6 +60,10 @@ export default function HomeScreen() {
         return true;
       };
 
+      const onSwipeDown = () => {
+        // refresh the page
+      }
+
       // console.log(session)
       BackHandler.addEventListener('hardwareBackPress', onBackPress);
 

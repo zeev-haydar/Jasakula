@@ -97,3 +97,41 @@ export const loadImage = async (setImage, userId) => {
         console.error("Error fetching image:", error.message);
     }
 };
+
+export const getUserAvatarURI = async (userId) => {
+    try {
+      // Try to get the public URL for the PNG image
+      let { data, error } = await supabase
+        .storage
+        .from('avatars')
+        .createSignedUrl(`${userId}.png`, 800000);
+  
+      if (error) {
+        // If the PNG image is not found, try to get the public URL for the JPG image
+        ({ data, error } = await supabase
+          .storage
+          .from('avatars')
+          .createSignedUrl(`${userId}.jpg`, 800000));
+  
+        if (error) {
+          // If the JPG image is not found, try to get the public URL for the JPEG image
+          ({ data, error } = await supabase
+            .storage
+            .from('avatars')
+            .createSignedUrl(`${userId}.jpeg`, 8000000));
+  
+          if (error) {
+            console.error("Error: No image found");
+            return null;
+          }
+        }
+      }
+  
+      // Return the obtained public URL
+      console.log("Public URL:", data.signedUrl);
+      return data.signedUrl;
+    } catch (error) {
+      console.error("Error fetching image:", error.message);
+      return null;
+    }
+  };

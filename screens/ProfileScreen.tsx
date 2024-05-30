@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faUser, faGear, faHammer, faSignOut } from '@fortawesome/free-solid-svg-icons'
 import { useAuth } from '@/providers/AuthProvider'
 import { loadImage } from '@/utils/images'
+import { GenericStyles } from '@/styles/generic'
 
 const ProfileScreen = () => {
   const router = useRouter();
@@ -26,12 +27,12 @@ const ProfileScreen = () => {
       return
     }
     console.log("berhasil logout")
-    router.replace("/login")
+    router.replace("/home")
   }
 
   useEffect(() => {
     const fetchPengguna = async () => {
-      const { data, error } = await supabase.from('pengguna').select('*').eq('id', auth.session.user.id).single()
+      const { data, error } = await supabase.from('pengguna').select('*').eq('id', auth.session?.user?.id).single()
       if (error) {
         console.error(error)
         return;
@@ -76,7 +77,7 @@ const ProfileScreen = () => {
                 )
               }
             </View>
-            <Text style={[styles.text, styles.bold, styles.normalTextSize]}>{auth.session.user?.user_metadata?.username}</Text>
+            <Text style={[GenericStyles.boldFont, styles.normalTextSize]}>{auth.session.user?.user_metadata?.username || ''}</Text>
           </View>
           {!isSeller && (
             <Link asChild href={"/profile/upgrade"}>
@@ -89,7 +90,7 @@ const ProfileScreen = () => {
         </View>
 
         <View style={styles.textContainer}>
-          <Text style={{ fontSize: 20, fontFamily: 'DM-Sans', fontWeight: 'bold', paddingBottom: 24, borderBottomWidth: 0.3, borderBottomColor: "#CFCECE" }}>Jasakula</Text>
+          <Text style={{ fontSize: 20, fontFamily: 'DMSans_700Bold', paddingBottom: 24, borderBottomWidth: 0.3, borderBottomColor: "#CFCECE" }}>Jasakula</Text>
           <View style={styles.menuText}>
             <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
               <FontAwesomeIcon icon={faUser} style={{ marginRight: 8 }} color='#CCC' />
@@ -178,7 +179,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   normalTextSize: {
-    fontSize: 20,
+    fontSize: 15,
   },
   textContainer: {
     flex: 1,
