@@ -42,36 +42,43 @@ const ChatScreen = () => {
         };
     }, []);
 
+    const fetchMessages = async () => {
+        try {
+            const { data: messages, error } = await supabase
+                .from('message')
+                .select('*')
+                .eq('chat_id', slug)
+                .order('sent_at', { ascending: true });
+
+            if (error) {
+                console.error('Error fetching messages:', error);
+            } else {
+                setMessageData(messages);
+            }
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+        }
+    };
+    
     useEffect(() => {
         // fetch the messageData
-        const fetchMessages = async () => {
-            try {
-                const { data: messages, error } = await supabase
-                    .from('message')
-                    .select('*')
-                    .eq('chat_id', slug)
-                    .order('sent_at', { ascending: true });
-
-                if (error) {
-                    console.error('Error fetching messages:', error);
-                } else {
-                    setMessageData(messages);
-                }
-            } catch (error) {
-                console.error('Error fetching messages:', error);
-            }
-        };
+        
 
         fetchMessages();
 
+        
+
+    }, [slug]);
+
+    useEffect(()=>{
         supabase
             .channel('public:messages')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'message' }, async () => {
-                await fetchMessages()
+                await fetchMessages();
+                scrollViewRef.current?.scrollToEnd({ animated: true });
             })
             .subscribe();
-
-    }, [slug]);
+    })
 
     
     useEffect(()=> {

@@ -85,7 +85,15 @@ const ChatsScreen = () => {
                 // add image
                 const imageURI = await getUserAvatarURI(otherPersonId)
 
-                return { ...chat, otherPersonName: otherPersonData.full_name, imageUrl: imageURI }
+                return { 
+                    ...chat, 
+                    otherPersonName: otherPersonData.full_name, 
+                    imageUrl: imageURI,
+                    lastMessage: chat.message ? {
+                        content: chat.message.content,
+                        date: new Date(chat.message.sent_at).toLocaleDateString()
+                    } : { content: 'empty', date: 'None' }
+                }
             }))
 
 
@@ -101,23 +109,22 @@ const ChatsScreen = () => {
     useEffect(() => {
         
         fetchChats()
+        
+    }, [])
 
-        // Realtime subscription to update the chat list when new messages arrive
-        supabase
+    useEffect(()=> {
+        const subscription = supabase
         .channel('public:messages')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'message' }, async () => {
-            await fetchChats()
+            await fetchChats();
         })
         .subscribe() 
 
-    }, [])
+    })
 
 
     const renderItem = ({ item }) => {
-        const lastMessage = item.message ? {
-            content: item.message.content,
-            date: new Date(item.message.sent_at).toLocaleDateString()
-        } : null
+        
 
 
         return (
@@ -136,10 +143,10 @@ const ChatsScreen = () => {
                         <View style={styles.chatTexts}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={[GenericStyles.boldFont, { width: "60%" }]}>{item.otherPersonName}</Text>
-                                <Text style={[styles.text, styles.normalText]}>{lastMessage?.date || 'None'}</Text>
+                                <Text style={[styles.text, styles.normalText]}>{item.lastMessage?.date}</Text>
                             </View>
 
-                            <Text style={[styles.text, styles.normalText]}>{lastMessage?.content || 'empty'}</Text>
+                            <Text style={[styles.text, styles.normalText]}>{item.lastMessage?.content}</Text>
                         </View>
                     </View>
                 </Pressable>

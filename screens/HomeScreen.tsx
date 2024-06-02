@@ -19,7 +19,6 @@ import { useAuth } from '@/providers/AuthProvider';
  */
 export default function HomeScreen() {
   const catProvider = useCategory()
-  const [session, setSession] = useState<Session | null>(null)
   const [text, setText] = React.useState("")
   const [nama, setNama] = React.useState("")
   const auth = useAuth();
@@ -31,27 +30,6 @@ export default function HomeScreen() {
     router.navigate(`/search/search_result?query=${text}&category=false`);
 
   };
-
-  useEffect(()=> {
-    const fetchSession = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        setSession(session);
-        if (!session || !session.user) {
-          // router.replace('/login');
-        }
-      } catch (error) {
-        console.error('Error fetching session:', error);
-        // router.replace('/login');
-      }
-    };
-
-    // console.log(auth.session)
-
-    fetchSession();
-  }, [])
-
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
@@ -90,8 +68,8 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Stack.Screen options={{
-        headerShown: true, headerTransparent: true, title: `Selamat Datang, ${session?.user?.user_metadata?.username ?? 'Pengguna'}.`,
-        headerTitleStyle: { fontFamily: 'DMSans_700Bold', fontSize: 25 }
+        headerShown: true, headerTransparent: true, title: `Selamat Datang, ${auth.session?.user?.user_metadata?.username ?? 'Pengguna'}.`,
+        headerTitleStyle: { fontFamily: 'DMSans_700Bold', fontSize: 20 }
       }} />
       <View style={styles.background_vector}>
         <Vector1 />

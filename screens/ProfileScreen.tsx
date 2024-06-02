@@ -21,7 +21,7 @@ const ProfileScreen = () => {
   const [image, setImage] = useState(null)
   const handleLogout = async () => {
     console.log('dipencet')
-    const { error } = await supabase.auth.signOut()
+    const { error } = auth.signOut()
     if (error) {
       console.log("Gagal logout", error)
       return
@@ -32,6 +32,11 @@ const ProfileScreen = () => {
 
   useEffect(() => {
     const fetchPengguna = async () => {
+      if (!auth.session?.user) {
+        setLoading(false);
+        router.replace("/home");
+        return;
+      }
       const { data, error } = await supabase.from('pengguna').select('*').eq('id', auth.session?.user?.id).single()
       if (error) {
         console.error(error)
@@ -48,13 +53,14 @@ const ProfileScreen = () => {
   }, [])
 
   useEffect(() => {
-    if (auth.session?.user)
+    if (auth.session?.user?.id)
       loadImage(setImage, auth?.session?.user?.id)
   }, [])
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, {justifyContent: 'center', alignItems: 'center'}]}>
+        <Stack.Screen options={{ headerShown: false, title: "Profile" }} />
         <ActivityIndicator size="large" color="#0000ff" />
       </SafeAreaView>
     );
@@ -78,7 +84,7 @@ const ProfileScreen = () => {
                 )
               }
             </View>
-            <Text style={[GenericStyles.boldFont, styles.normalTextSize]}>{auth.session.user?.user_metadata?.username || ''}</Text>
+            <Text style={[GenericStyles.boldFont, styles.normalTextSize]}>{auth.session?.user?.user_metadata?.username || ''}</Text>
           </View>
           {!isSeller && (
             <Link asChild href={"/profile/upgrade"}>

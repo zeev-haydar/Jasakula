@@ -4,6 +4,8 @@ import { supabase } from '../utils/supabase';
 import { Button } from 'react-native-paper';
 import { useAuth } from '@/providers/AuthProvider';
 import { DMSans_400Regular, DMSans_500Medium, DMSans_700Bold } from '@expo-google-fonts/dm-sans';
+import { formatPrice } from '@/utils/formatting';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const App = () => {
   const auth = useAuth();
@@ -13,25 +15,23 @@ const App = () => {
   const [items4, setItems4] = useState([]);
   const [menu1, setMenu1] = useState("Pesanan");
   const [menu2, setMenu2] = useState("Aktif");
-  const [id, setId] = useState("")
   useEffect(() => {
     fetchItems1();
     fetchItems2();
     fetchItems3();
     fetchItems4();
-    setId(auth.session?.user.id);
   }, []);
 
   useEffect(() => {
-    console.log(id)
-  }, [id]);
+    console.log(auth.session?.user.id)
+  }, [auth.session?.user.id]);
 
 
   const fetchItems1 = async () => {
     const { data, error } = await supabase
       .from('order')
-      .select(' id,tanggal, cost, waktu, jasa (id, nama, deskripsi, url_gambar)')
-      .eq('pengguna_id', 'id')
+      .select('id,tanggal, cost, waktu, jasa: jasa_id(id, nama, deskripsi, url_gambar)')
+      .eq('pengguna_id', auth.session?.user.id)
       .eq("waktu", "Aktif");
     if (error) {
       console.error('Error fetching items:', error);
@@ -44,8 +44,8 @@ const App = () => {
   const fetchItems2 = async () => {
     const { data, error } = await supabase
       .from('order')
-      .select(' id,tanggal, cost, waktu, jasa (id, nama, deskripsi, url_gambar)')
-      .eq('pengguna_id', id)
+      .select('id,tanggal, cost, waktu, jasa: jasa_id(id, nama, deskripsi, url_gambar)')
+      .eq('pengguna_id', auth.session?.user.id)
       .eq("waktu", "Selesai");
     if (error) {
       console.error('Error fetching items:', error);
@@ -58,9 +58,9 @@ const App = () => {
   const fetchItems3 = async () => {
     const { data, error } = await supabase
       .from('order')
-      .select(' id,tanggal, cost, waktu, jasa (id, nama, deskripsi, url_gambar)')
-      .eq('penjual_pengguna_id', id)
-      .eq('waktu','Aktif')
+      .select('id,tanggal, cost, waktu, jasa: jasa_id(id, nama, deskripsi, url_gambar)')
+      .eq('penjual_pengguna_id', auth.session?.user.id)
+      .eq('waktu', 'Aktif')
 
 
     if (error) {
@@ -75,9 +75,9 @@ const App = () => {
   const fetchItems4 = async () => {
     const { data, error } = await supabase
       .from('order')
-      .select(' id,tanggal, cost, waktu, jasa (id, nama, deskripsi, url_gambar)')
-      .eq('penjual_pengguna_id', id)
-      .eq('waktu','Selesai')
+      .select(' id,tanggal, cost, waktu, jasa: jasa_id(id, nama, deskripsi, url_gambar)')
+      .eq('penjual_pengguna_id', auth.session?.user.id)
+      .eq('waktu', 'Selesai')
 
 
     if (error) {
@@ -102,96 +102,92 @@ const App = () => {
     return text;
   };
 
-  const formatToRupiah = (number) => {
 
-    const reversed = String(number).replace(/\D/g, '').split('').reverse();
-    
-
-    const formatted = reversed.reduce((acc, digit, index) => {
-      return digit + (index && index % 3 === 0 ? '.' : '') + acc;
-    }, '');
-  
-
-    return 'Rp ' + formatted;
-  };
-
-  
   const renderItem = ({ item }) => (
-    <View style={{ alignSelf: "center" }}>
-    <View style={styles.card}>
-      <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: item?.jasa.url_gambar }} 
-          style={styles.image}
-        />
-      </View>
-      <View style={styles.contentContainer}>
-        <Text style={{ fontSize: 10, fontFamily: 'DMSans_700Bold'}}>{truncateText(item.jasa.nama,10)}</Text>
-        <Text style={{ fontSize: 10, fontFamily: 'DMSans_400Regular', marginTop: 7}}>{truncateText(item.jasa.deskripsi,10)}</Text>
-        <View style={styles.alignBottomContainer}>
-          <Text style={[styles.alignBottomText,{color : '#71BFD1'}]}>{formatToRupiah(item.cost)}</Text>
+      <View style={styles.card}>
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: item?.jasa?.url_gambar?.length > 0 ? item?.jasa?.url_gambar : 'https://www.youngontop.com/wp-content/uploads/2023/10/elephant-amboseli-national-park-kenya-africa.jpg' }}
+            style={styles.image}
+          />
+        </View>
+        <View style={styles.contentContainer}>
+          <Text style={{ fontSize: 10, fontFamily: 'DMSans_700Bold' }}>{truncateText(item.jasa.nama, 10)}</Text>
+          <Text style={{ fontSize: 10, fontFamily: 'DMSans_400Regular', marginTop: 7 }}>{truncateText(item.jasa.deskripsi, 10)}</Text>
+          <View style={styles.alignBottomContainer}>
+            <Text style={[styles.alignBottomText, { color: '#71BFD1' }]}>Rp{formatPrice(item.cost)}</Text>
+          </View>
         </View>
       </View>
-    </View>
-  </View>
   );
 
 
 
 
   const checkCondition = () => {
-    if (menu1=='Pesanan' && menu2 == 'Aktif') {
+    if (menu1 == 'Pesanan' && menu2 == 'Aktif') {
       return items1;
-    } else if (menu1=='Pesanan' && menu2 == 'Selesai') {
+    } else if (menu1 == 'Pesanan' && menu2 == 'Selesai') {
       return items2;
-    } else if (menu1=='Permintaan' && menu2 == 'Aktif') {
+    } else if (menu1 == 'Permintaan' && menu2 == 'Aktif') {
       return items3;
-    }  else {
+    } else {
       return items4;
     }
   }
- 
+
 
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Pesanan dan Permintaan</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={{ backgroundColor: '#fff', flex: 1 }}>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>Pesanan dan Permintaan</Text>
+        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 5 }}>
+          <TouchableOpacity style={[styles.buttonContainer]} onPress={() => { setMenu1("Pesanan") }}>
+            <Text style={[styles.buttonText, { color: lineColor1 }]}>Pesanan</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonContainer} onPress={() => { setMenu1("Permintaan") }}>
+            <Text style={[styles.buttonText, { color: lineColor2 }]}>Permintaan</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.lineContainer}>
+          <View style={[styles.line, { backgroundColor: lineColor1 }]} />
+          <View style={[styles.line, { backgroundColor: lineColor2 }]} />
+        </View>
+        <View style={[{ marginTop: 15, flexDirection: 'row', justifyContent: 'space-around', }]} >
+          <Button style={[styles.button, { backgroundColor: buttonColor1, }]}
+            contentStyle={{ justifyContent: 'center', alignItems: 'center' }}
+            labelStyle={[styles.buttonText, { fontSize: 15, color: textColor1, width: '100%' }]}
+            onPress={() => { setMenu2("Aktif") }}>
+            <Text>Aktif</Text>
+          </Button>
+          <Button style={[styles.button, { backgroundColor: buttonColor2, }]}
+            contentStyle={{ justifyContent: 'center', alignItems: 'center' }}
+            labelStyle={[styles.buttonText, { fontSize: 15, color: textColor2, width: '100%' }]}
+            onPress={() => { setMenu2("Selesai") }}>
+            <Text >Selesai</Text>
+          </Button>
+        </View>
+
+        <FlatList
+          data={checkCondition()}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          contentContainerStyle={styles.orderList}
+        />
       </View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 5 }}>
-        <TouchableOpacity style={[styles.buttonContainer]} onPress={() => { setMenu1("Pesanan") }}>
-          <Text style={[styles.buttonText, { color: lineColor1 }]}>Pesanan</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonContainer} onPress={() => { setMenu1("Permintaan") }}>
-          <Text style={[styles.buttonText, { color: lineColor2 }]}>Permintaan</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.lineContainer}>
-        <View style={[styles.line, { backgroundColor: lineColor1 }]} />
-        <View style={[styles.line, { backgroundColor: lineColor2 }]} />
-      </View>
-      <View style={[styles.container, { marginTop: 15, flexDirection: 'row', alignSelf: "center" }]} >
-        <Button style={[styles.button, { backgroundColor: buttonColor1, marginHorizontal: 47.5 }]} onPress={() => { setMenu2("Aktif") }}>
-          <Text style={[styles.buttonText, { fontSize: 10, color: textColor1 }]}>Aktif</Text>
-        </Button>
-        <Button style={[styles.button, { backgroundColor: buttonColor2, marginHorizontal: 47.5 }]} onPress={() => { setMenu2("Selesai") }}>
-          <Text style={[styles.buttonText, { fontSize: 10, color: textColor2 }]}>Selesai</Text>
-        </Button>
-      </View>
-      <View>
-      <FlatList
-        data={checkCondition()}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-      />
-    </View>
-    </View>
+
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFFFFFF",
+    backgroundColor: "#71bfd1",
+    width: '100%',
+    flex: 1,
   },
   buttonContainer: {
     width: '50%',
@@ -205,9 +201,10 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    fontFamily: "DM-Sans",
-    fontWeight: 'bold',
+    fontFamily: "DMSans_700Bold",
     color: '#9F9F9F',
+    textAlign: 'center',
+    textAlignVertical: 'center',
   },
   header: {
     backgroundColor: '#71BFD1',
@@ -217,13 +214,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   headerText: {
-    fontFamily: "DM-Sans",
+    fontFamily: "DMSans_700Bold",
     color: 'white',
     fontSize: 20,
-    fontWeight: 'bold',
   },
   lineContainer: {
-    paddingTop: 0,
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
@@ -238,8 +233,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   button: {
-    height: 22,
-    width: 88,
+    height: '35%',
+    width: '40%',
     borderRadius: 5,
     borderColor: 'black',
     justifyContent: 'center',
@@ -247,8 +242,7 @@ const styles = StyleSheet.create({
   },
   card: {
     flexDirection: 'row',
-    height: 95,
-    width: 350,
+    height: '55%',
     borderRadius: 10,
     backgroundColor: '#fff',
     shadowColor: '#000',
@@ -256,12 +250,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0,
     shadowRadius: 2,
     elevation: 1,
-    marginTop: 25,
-    
+
   },
   imageContainer: {
     width: '33.33%',
-    height: '100%',
   },
   image: {
     width: '100%',
@@ -273,17 +265,21 @@ const styles = StyleSheet.create({
     width: '66.67%',
     paddingHorizontal: 10,
     justifyContent: 'flex-end',
-    paddingVertical : 10,
+    paddingVertical: 10,
   },
   alignBottomContainer: {
     flex: 1,
     justifyContent: 'flex-end',
   },
   alignBottomText: {
-    fontSize: 10,
-    fontFamily: 'DMSans_500Medium',
+    fontSize: 15,
+    fontFamily: 'DMSans_400Regular',
     alignSelf: 'flex-end', // Align text to the right
   },
+  orderList: {
+    flex: 1,
+    paddingHorizontal: 10
+  }
 });
 
 export default App;

@@ -12,8 +12,7 @@ const _layout = () => {
         },
         headerTintColor: '#fff',
         headerTitleStyle: {
-          fontWeight: 'bold',
-          fontFamily: 'DM-Sans',
+          fontFamily: 'DMSans_700Bold',
           fontSize: 25
         },
       }}
