@@ -7,6 +7,7 @@ import { useFonts, DMSans_400Regular, DMSans_700Bold } from '@expo-google-fonts/
 
 import DM_Sans from '@expo-google-fonts/dm-sans';
 import { Provider } from "react-native-paper";
+import { ChatProvider } from "@/providers/chat_provider";
 
 export default function AppLayout() {
 
@@ -25,7 +26,9 @@ export default function AppLayout() {
             <AuthProvider>
                 <CategoryProvider>
                     <JasaProvider>
-                        <Slot />
+                        <ChatProvider>
+                            <Slot />
+                            </ChatProvider>
                     </JasaProvider>
                 </CategoryProvider>
             </AuthProvider>

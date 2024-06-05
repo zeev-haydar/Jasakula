@@ -9,12 +9,11 @@ const _layout = () => {
     const router = useRouter();
     const auth = useAuth();
     useEffect(() => {
-        if (!auth.session) {router.replace('/login')} else {console.log("ada auth")}
+        if (!auth.session) { router.replace('/login') } else { console.log("ada auth") }
     }, [])
 
     return (
-        <ChatProvider>
-            <Stack
+        <Stack
             screenOptions={{
                 headerStyle: {
                     backgroundColor: '#71BFD1',
@@ -28,8 +27,6 @@ const _layout = () => {
             }}
         />
 
-        </ChatProvider>
-        
     )
 }
 

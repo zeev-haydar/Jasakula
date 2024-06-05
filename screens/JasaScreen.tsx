@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, Dimensions, ScrollView, Pressable } from 'react-native'
+import { StyleSheet, Text, View, Image, Dimensions, ScrollView, Pressable, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Link, Stack, useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,6 +10,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { Button } from 'react-native-paper';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { supabase } from '@/utils/supabase';
+import { checkChatExistence, createChatWithUser } from '@/utils/fetch';
+import { useAuth } from '@/providers/AuthProvider';
+import { useChatContext } from '@/providers/chat_provider';
 
 const JasaScreen = () => {
     const [data, setData] = useState([]);
@@ -18,7 +21,8 @@ const JasaScreen = () => {
     const [isTimeout, setIsTimeout] = useState(false);
 
     const { slug } = useLocalSearchParams();
-
+    const auth = useAuth();
+    const chat = useChatContext();
     const router = useRouter();
 
     const { jasa: jasaContext } = useJasa();
@@ -70,6 +74,30 @@ const JasaScreen = () => {
         fetchData();
     }, [slug]);
 
+    const handleChatFreelancer = async () => {
+        console.log("ooooo");
+        
+        // check existen
+        if (!auth.session){
+            router.navigate('/login');
+        }
+        let chatMemberId:string;
+        const {exist, chat_member_id} = await checkChatExistence(auth?.session?.user?.id, data[0].penjual?.pengguna?.id);
+        if (!exist) {
+            const {data: chatData, error} = await createChatWithUser(auth?.session?.user?.id, data[0].penjual?.pengguna?.id);
+            if (error) {
+                Alert.alert("ERROR!", error?.message || error);
+                return;
+            }
+            chatMemberId= chatData.chat_member_id;
+        }else{
+            chatMemberId = chat_member_id
+        }
+        chat.changeName(data[0].penjual?.pengguna?.full_name)
+        router.navigate("/chats/"+chatMemberId);
+
+    }
+
     // Set image container height proportional to screen width (16:9 ratio)
     const imageHeight = (9 / 16) * screenWidth;
     return (
@@ -105,7 +133,7 @@ const JasaScreen = () => {
                         <View style={styles.information}>
                             {React.Children.map([
                                 <Text style={[styles.text, styles.nama]} key="nama">{data[0].nama}</Text>,
-                                <Text style={[styles.text, styles.rating]} key="rating">★ {Math.round(data[0].rating*100)/100}</Text>,
+                                <Text style={[styles.text, styles.rating]} key="rating">★ {Math.round(data[0].rating * 100) / 100}</Text>,
                                 <Text style={[styles.text, styles.deskripsi]} key="deskripsi">{data[0].deskripsi}</Text>,
                             ], child => (
                                 React.cloneElement(child, { style: [child.props.style, { paddingBottom: 8 }] })
@@ -119,9 +147,11 @@ const JasaScreen = () => {
 
                                 <Text style={[styles.text, styles.rating]}>{data[0].penjual?.pengguna?.full_name ? data[0].penjual.pengguna.full_name : "No Name"}</Text>
                             </View>
-                            <Button style={styles.chatFreelancerButton}>
+
+                            <Button style={styles.chatFreelancerButton} rippleColor={'#ccc'} onPress={() => handleChatFreelancer()} >
                                 <Text style={[styles.text, { fontSize: 10, color: '#71BFD1', fontWeight: 'bold' }]}>Chat Freelancer</Text>
                             </Button>
+
                         </View>
                         <View style={styles.harga}>
                             <Text style={[styles.text, styles.hargaJual]}>Harga Jasa :</Text>
@@ -133,7 +163,7 @@ const JasaScreen = () => {
                         </Button>
                         <View style={styles.ulasan}>
                             <Text style={[styles.text, styles.ulasanHeader]}>{data[0].jumlah_ulasan} Ulasan</Text>
-                            <Link push
+                            <Link
                                 href={
                                     `/search/works/${slug}/reviews/`
                                 }

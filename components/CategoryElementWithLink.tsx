@@ -8,7 +8,7 @@ const CategoryElementWithLink = ({ source, title, description }) => {
 
     const catProvider = useCategory();
     return (
-        <Link push href={
+        <Link href={
             {
                 pathname: "/search/search_result",
                 params: {

@@ -285,7 +285,7 @@ const UpgradeScreen = () => {
             />
             <TextInput
                 label={
-                    <Text style={[GenericStyles.normalText, { fontSize: 12 }, styles.label]}>
+                    <Text style={[GenericStyles.normalText, { fontSize: 12 }]}>
                         Deskripsi
                         <Text style={{ color: 'red' }}> *</Text>
                     </Text>}

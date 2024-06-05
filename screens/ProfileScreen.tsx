@@ -59,7 +59,7 @@ const ProfileScreen = () => {
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, {justifyContent: 'center', alignItems: 'center'}]}>
+      <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
         <Stack.Screen options={{ headerShown: false, title: "Profile" }} />
         <ActivityIndicator size="large" color="#0000ff" />
       </SafeAreaView>
@@ -98,23 +98,31 @@ const ProfileScreen = () => {
 
         <View style={styles.textContainer}>
           <Text style={{ fontSize: 20, fontFamily: 'DMSans_700Bold', paddingBottom: 24, borderBottomWidth: 0.3, borderBottomColor: "#CFCECE" }}>Jasakula</Text>
-          <View style={styles.menuText}>
-            <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
-              <FontAwesomeIcon icon={faUser} style={{ marginRight: 8 }} color='#CCC' />
-              <Text style={[{ fontSize: 15, }, styles.text]}>Profile</Text>
-            </View>
-            <Text style={[styles.text, styles.lebihDariSymbol]}>{">"}</Text>
+          <Link asChild href={"/profile/info"}>
+            <TouchableOpacity style={{flex: 0}}>
+              <View style={styles.menuText}>
+                <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
+                  <FontAwesomeIcon icon={faUser} style={{ marginRight: 8 }} color='#CCC' />
+                  <Text style={[{ fontSize: 15, }, styles.text]}>Profil</Text>
+                </View>
+                <Text style={[styles.text, styles.lebihDariSymbol]}>{">"}</Text>
 
-          </View>
+              </View>
+            </TouchableOpacity>
+
+          </Link>
+          <View style={styles.bordernya}/>
+
           <View style={styles.menuText}>
             <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
               <FontAwesomeIcon icon={faGear} style={{ marginRight: 8 }} color='#CCC' />
-              <Text style={[{ fontSize: 15, }, styles.text]}>Setting</Text>
+              <Text style={[{ fontSize: 15, }, styles.text]}>Setelan</Text>
             </View>
             <Text style={[styles.text, styles.lebihDariSymbol]}>{">"}</Text>
 
           </View>
-          <Link asChild href={"/profile/jasa"}>
+          <View style={styles.bordernya}/>
+          {isSeller && <Link asChild href={"/profile/jasa"}>
             <TouchableOpacity style={{ flex: 0 }}>
               <View style={styles.menuText}>
 
@@ -127,7 +135,7 @@ const ProfileScreen = () => {
 
               </View>
             </TouchableOpacity>
-          </Link>
+          </Link>}
           <Pressable onPress={handleLogout}>
             <View style={styles.menuText}>
               <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
@@ -137,6 +145,7 @@ const ProfileScreen = () => {
               <Text style={[styles.text, styles.lebihDariSymbol]}>{">"}</Text>
             </View>
           </Pressable>
+          <View style={styles.bordernya}/>
 
 
         </View>
@@ -202,11 +211,14 @@ const styles = StyleSheet.create({
   menuText: {
     width: '100%',
 
-    borderBottomWidth: 0.3,
-    borderBottomColor: "#CFCECE",
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  bordernya: {
+    borderBottomWidth: 0.3,
+    borderBottomColor: "#CFCECE",
+    width: '100%',
   },
   lebihDariSymbol: {
     fontSize: 30,

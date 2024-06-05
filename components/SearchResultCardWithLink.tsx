@@ -8,7 +8,7 @@ import { useJasa } from '@/providers/JasaProvider'
 const SearchResultCardWithLink: React.FC<{id:string, nama: string, rating: number, harga: number, source: ImageSourcePropType }> = ({id, nama, rating, harga, source }) => {
 
   return (
-    <Link push href={
+    <Link href={
       {
         pathname: `/search/works/[slug]`,
         params: {slug: id}
