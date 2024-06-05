@@ -15,7 +15,7 @@ import { useAuth } from '@/providers/AuthProvider';
 import { useChatContext } from '@/providers/chat_provider';
 
 const JasaScreen = () => {
-    const [data, setData] = useState([]);
+    const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isTimeout, setIsTimeout] = useState(false);
@@ -51,7 +51,7 @@ const JasaScreen = () => {
                             id, full_name, nickname
                         )
                     )
-                `).eq('id', slug);
+                `).eq('id', slug).single();
 
             if (response.error) {
                 console.log(response.error)
@@ -82,9 +82,9 @@ const JasaScreen = () => {
             router.navigate('/login');
         }
         let chatMemberId:string;
-        const {exist, chat_member_id} = await checkChatExistence(auth?.session?.user?.id, data[0].penjual?.pengguna?.id);
+        const {exist, chat_member_id} = await checkChatExistence(auth?.session?.user?.id, data.penjual?.pengguna?.id);
         if (!exist) {
-            const {data: chatData, error} = await createChatWithUser(auth?.session?.user?.id, data[0].penjual?.pengguna?.id);
+            const {data: chatData, error} = await createChatWithUser(auth?.session?.user?.id, data.penjual?.pengguna?.id);
             if (error) {
                 Alert.alert("ERROR!", error?.message || error);
                 return;
@@ -93,9 +93,14 @@ const JasaScreen = () => {
         }else{
             chatMemberId = chat_member_id
         }
-        chat.changeName(data[0].penjual?.pengguna?.full_name)
+        chat.changeName(data.penjual?.pengguna?.full_name)
         router.navigate("/chats/"+chatMemberId);
 
+    }
+
+    const handleTransaction = () => {
+        changeJasa(data);
+        router.navigate(`/search/works/${slug}/transaction/`)
     }
 
     // Set image container height proportional to screen width (16:9 ratio)
@@ -132,9 +137,9 @@ const JasaScreen = () => {
                     <View style={styles.content}>
                         <View style={styles.information}>
                             {React.Children.map([
-                                <Text style={[styles.text, styles.nama]} key="nama">{data[0].nama}</Text>,
-                                <Text style={[styles.text, styles.rating]} key="rating">★ {Math.round(data[0].rating * 100) / 100}</Text>,
-                                <Text style={[styles.text, styles.deskripsi]} key="deskripsi">{data[0].deskripsi}</Text>,
+                                <Text style={[styles.text, styles.nama]} key="nama">{data.nama}</Text>,
+                                <Text style={[styles.text, styles.rating]} key="rating">★ {Math.round(data.rating * 100) / 100}</Text>,
+                                <Text style={[styles.text, styles.deskripsi]} key="deskripsi">{data.deskripsi}</Text>,
                             ], child => (
                                 React.cloneElement(child, { style: [child.props.style, { paddingBottom: 8 }] })
                             ))}
@@ -145,7 +150,7 @@ const JasaScreen = () => {
                                     <FontAwesomeIcon icon={faUser} size={16} color='#71BFD1' />
                                 </View>
 
-                                <Text style={[styles.text, styles.rating]}>{data[0].penjual?.pengguna?.full_name ? data[0].penjual.pengguna.full_name : "No Name"}</Text>
+                                <Text style={[styles.text, styles.rating]}>{data.penjual?.pengguna?.full_name ? data.penjual.pengguna.full_name : "No Name"}</Text>
                             </View>
 
                             <Button style={styles.chatFreelancerButton} rippleColor={'#ccc'} onPress={() => handleChatFreelancer()} >
@@ -155,14 +160,13 @@ const JasaScreen = () => {
                         </View>
                         <View style={styles.harga}>
                             <Text style={[styles.text, styles.hargaJual]}>Harga Jasa :</Text>
-                            <Text style={[styles.text, styles.priceTag]}>Rp{formatPrice(data[0].harga)}</Text>
+                            <Text style={[styles.text, styles.priceTag]}>Rp{formatPrice(data.harga)}</Text>
                         </View>
-                        <Text style={[styles.text, { color: '#9F9F9F', fontSize: 10 }]}>Penyelesaian sekitar 3 hari</Text>
-                        <Button style={styles.nextButton}>
+                        <Button style={styles.nextButton} onPress={()=>handleTransaction()}>
                             <Text style={[styles.text, { fontSize: 10, color: '#fff', fontWeight: 'bold' }]}>Lanjutkan</Text>
                         </Button>
                         <View style={styles.ulasan}>
-                            <Text style={[styles.text, styles.ulasanHeader]}>{data[0].jumlah_ulasan} Ulasan</Text>
+                            <Text style={[styles.text, styles.ulasanHeader]}>{data.jumlah_ulasan} Ulasan</Text>
                             <Link
                                 href={
                                     `/search/works/${slug}/reviews/`

@@ -39,7 +39,7 @@ const GenericStyles = StyleSheet.create({
         backgroundColor: '#71bfd1'
     },
     normalText: {
-        fontFamily: 'DM-Sans',
+        fontFamily: 'DMSans_400Regular',
         fontSize: 10,
     },
     activeColor: {

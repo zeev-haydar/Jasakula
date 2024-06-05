@@ -28,7 +28,7 @@ export default function AppLayout() {
                     <JasaProvider>
                         <ChatProvider>
                             <Slot />
-                            </ChatProvider>
+                        </ChatProvider>
                     </JasaProvider>
                 </CategoryProvider>
             </AuthProvider>

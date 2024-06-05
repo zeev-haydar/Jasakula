@@ -7,7 +7,7 @@ const jasaContext = createContext(null);
 const JasaProvider = ({children}) => {
     const [jasa, setJasa] = useState(null);
 
-    const changeJasa = (jasa: Jasa) => {
+    const changeJasa = (jasa) => {
         setJasa(jasa);
     }
 
