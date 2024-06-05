@@ -1,36 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, FlatList, Image } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, FlatList, Image, Alert } from 'react-native';
 import { supabase } from '../utils/supabase';
 import { useAuth } from '@/providers/AuthProvider';
 import StackHeader from '@/components/StackHeader'
 import { DMSans_700Bold } from '@expo-google-fonts/dm-sans';
 import { router } from 'expo-router';
+import { getImage, loadImage } from '@/utils/images';
 
 const EditJasaScreen = () => {
   const auth = useAuth();
   const [data, setData] = useState([]);
   const [id, setId] = useState("")
-  const renderItem = ({ item }) => (
 
+  const fetchUri = async (itemId) => {
+    const { uri } = await getImage(itemId, 'images');
+    return uri;
+  }
+  
 
-    <View style={styles.item}>
-      <Image source={{ uri: item.url_gambar.length > 0 ? item.url_gambar : 'https://asset.kompas.com/crops/ZooJx7Zw6jqaVJeVsWEEVyOkor0=/27x0:863x558/750x500/data/photo/2023/02/18/63f02d9393e94.jpg' }} style={styles.image} />
+  const ImageLoader = ({ item }) => {
+    const [uriImage, setUriImage] = useState('');
 
-      <View style={{ padding: 6 }}>
-        <Text>{item.nama}</Text>
-      </View>
-    </View>
+    useEffect(() => {
+      const loadUri = async () => {
+        const uri = await fetchUri(item.id);
+        setUriImage(uri);
+      }
+      loadUri();
+    }, [item.id]);
 
-  );
+    return (
+      <Image source={{ uri: uriImage || 'https://asset.kompas.com/crops/ZooJx7Zw6jqaVJeVsWEEVyOkor0=/27x0:863x558/750x500/data/photo/2023/02/18/63f02d9393e94.jpg' }} style={styles.image} />
+    );
+  };
   const fetchData = async () => {
     const { data, error } = await supabase
       .from('penjual')
-      .select(' id, pengguna_id, jasa (*)')
-      .eq('pengguna_id',auth.session?.user?.id)
+      .select('id, pengguna_id, jasa (*)')
+      .eq('pengguna_id', auth.session?.user?.id).single()
     if (error) {
       console.error('Error fetching items:', error);
     } else {
-      setData(data[0].jasa);
+      setData(data.jasa);
 
     }
   };
@@ -45,16 +56,63 @@ const EditJasaScreen = () => {
 
 
   const handleButtonPress = () => {
-    router.replace('/profile/jasa/add')
+    router.navigate('/profile/jasa/add')
   };
+
+  const handleDelete = async (itemId) => {
+    const { error } = await supabase
+      .from('jasa')
+      .delete()
+      .eq('id', itemId);
+
+    if (error) {
+      console.error('Error deleting item:', error);
+      Alert.alert('Error', 'Failed to delete the item.');
+    } else {
+      setData(prevData => prevData.filter(item => item.id !== itemId));
+    }
+  };
+
+  const renderItem = ({ item }) => {
+    return (
+      <TouchableOpacity style={styles.item}
+      onLongPress={() => {
+        Alert.alert(
+          'Confirm Delete',
+          'Are you sure you want to delete this item?',
+          [
+            {
+              text: 'Cancel',
+              style: 'cancel',
+            },
+            {
+              text: 'Delete',
+              onPress: () => handleDelete(item.id),
+              style: 'destructive',
+            },
+          ],
+          { cancelable: true }
+        );
+      }}
+      >
+
+        <ImageLoader item={item} />
+        <View style={{ padding: 6 }}>
+          <Text>{item.nama}</Text>
+        </View>
+      </TouchableOpacity>
+
+    );
+  };
+
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <StackHeader title={"Menu Tambahkan Jasa"} />
-      <View style={{ flexDirection: 'row', marginVertical: 20, paddingHorizontal: 20, width: '100%', justifyContent: 'space-between'}}>
+      <View style={{ flexDirection: 'row', marginVertical: 20, paddingHorizontal: 20, width: '100%', justifyContent: 'space-between' }}>
         <Text style={{ fontSize: 20, fontFamily: 'DM-Sans', paddingTop: 6 }}>
           Jasa Anda
         </Text>
-        <View style={{ paddingLeft: 20}}>
+        <View style={{ paddingLeft: 20 }}>
           <TouchableOpacity style={styles.greenButton} onPress={handleButtonPress}>
             <Text style={{ color: 'white', fontFamily: 'DM-Sans', fontSize: 14 }}>Buat Jasa Baru</Text>
           </TouchableOpacity>
@@ -96,7 +154,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 2,
-    marginTop :20,
+    marginTop: 20,
     elevation: 1,
   },
   line: {
@@ -126,5 +184,6 @@ const styles = StyleSheet.create({
     height: '66%', // 2/3 dari tinggi item
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
+    resizeMode: 'stretch'
   },
 });

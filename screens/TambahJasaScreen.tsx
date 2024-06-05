@@ -11,7 +11,7 @@ import { useAuth } from '@/providers/AuthProvider'
 import StackHeader from '@/components/StackHeader'
 import { GenericStyles } from '@/styles/generic'
 import { setUrlAsync } from 'expo-clipboard'
-import { handleSaveImage } from '@/utils/images'
+import { handleSaveImage, pickImage } from '@/utils/images'
 
 
 
@@ -26,17 +26,21 @@ const TambahJasaScreen = () => {
     const [harga, setHarga] = useState('')
     const [deskripsi, setDeskripsi] = useState('')
     const scrollViewRef = React.useRef(null);
+    const [loadingSubmit, setLoadingSubmit] = useState(false)
 
     const router = useRouter();
     const handleSubmit = async () => {
+        setLoadingSubmit(true);
         console.log(nama, kategori, url2, harga, deskripsi, idPenjual)
         if (!nama || !kategori || !image || !harga || !deskripsi) {
             Alert.alert("Semua kolom harus diisi!");
+            setLoadingSubmit(false);
             return;
         }
         if (!nama || !kategori || !image || !harga || !deskripsi) {
             Alert.alert("Semua kolom harus diisi!");
             console.log("isi data")
+            setLoadingSubmit(false);
             return;
         }
 
@@ -47,20 +51,21 @@ const TambahJasaScreen = () => {
                 .insert([{
                     nama,
                     jenis: kategori,
-                    url_gambar: url2,
                     harga,
                     deskripsi,
                     penjual_id: idPenjual
-                }]);
+                }]).select().single();
 
             if (error) {
                 Alert.alert("Error inserting data:", error.message);
+                setLoadingSubmit(false);
                 console.log(error.message)
             } else {
-                const error = await handleSaveImage(image, auth?.session?.user.id, "images")
+                const error = await handleSaveImage(image, data.id, "images")
                 if (error) {
                     Alert.alert("Error inserting data:", error);
                     console.log(error)
+                    setLoadingSubmit(false);
                     return;
                 }
                 console.log("apalah")
@@ -74,6 +79,8 @@ const TambahJasaScreen = () => {
             }
         } catch (error) {
             Alert.alert("Error handling data:", error.message);
+        } finally {
+            setLoadingSubmit(false);
         }
     };
 
@@ -121,26 +128,9 @@ const TambahJasaScreen = () => {
     }, []);
 
     useEffect(() => {
+        fetchData()
+    }, []);
 
-    }, [idPenjual]);
-
-    const pickImage = async () => {
-        // No permissions request is necessary for launching the image library
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
-        });
-
-        console.log(result);
-
-        if (!result.canceled) {
-            setImage(result.assets[0].uri);
-            setUrl(result?.assets[0]?.fileName)
-
-        }
-    };
 
 
     return (
@@ -182,15 +172,17 @@ const TambahJasaScreen = () => {
                                 onChangeText={setNama}
                                 style={styles.input}
                             />
-                            <View >
-                                {image ? (
-                                    <Image source={{ uri: image }} style={[styles.input, { height: 250, justifyContent: "center", alignItems: "center" }]} />
+                            <View style={{width:'100%', alignItems: 'center'}}>
+                                {image?.assets ?  (
+                                    <Image source={{ uri: image.assets[0].uri }} style={[styles.input, { height: 250, width: 250, justifyContent: "center", alignItems: "center" }]} />
+                                ) :(image ? (
+                                    <Image source={{ uri: image.uri }} style={[styles.input, { height: 250,  width: 250, justifyContent: "center", alignItems: "center" }]} />
                                 ) : (
                                     <View style={[styles.input, { height: 250, justifyContent: "center", alignItems: "center" }]}><Text style={{ color: "#CFCECE", textAlign: "center" }}>Tambahkan gambar yang relevan dengan konten yang ada pada jasa anda</Text></View>
-                                )}
-                                <View style={{ marginTop: 20 }}>
-                                    <TouchableOpacity style={[GenericStyles.boxButtonBlue, { alignItems: 'center', justifyContent: 'center' }]} onPress={pickImage}>
-                                        <Text style={{ color: "#fff", lineHeight: 40, textAlignVertical: 'center' }}>Unggah Foto</Text>
+                                ))}
+                                <View style={{ marginTop: 20,  width: '80%' }}>
+                                    <TouchableOpacity style={[GenericStyles.boxButtonBlue, { alignItems: 'center', justifyContent: 'center', }]} onPress={()=>pickImage(setImage)}>
+                                        <Text style={{ color: "#fff", lineHeight: 40, textAlignVertical: 'center', width: '100%', textAlign: 'center'}}>Unggah Foto</Text>
                                     </TouchableOpacity>
                                 </View>
 
@@ -226,7 +218,7 @@ const TambahJasaScreen = () => {
                                 onChangeText={setHarga}
                                 style={styles.input}
                             />
-                            <Button style={[GenericStyles.boxButtonBlue, { marginTop: 30, width: "100%" }]} onPress={handleSubmit}>
+                            <Button style={[GenericStyles.boxButtonBlue, { marginTop: 30, width: "100%" }]} onPress={handleSubmit} disabled={loadingSubmit}>
                                 <Text style={{ color: "#fff" }}>Terbitkan Jasa</Text>
                             </Button>
                         </View>

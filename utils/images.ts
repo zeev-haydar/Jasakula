@@ -62,26 +62,26 @@ export const pickImage = async (setImage) => {
     }
 };
 
-export const loadImage = async (setImage, userId) => {
+export const loadImage = async (setImage, userId, bucket='avatars') => {
     try {
         // Mencoba mendapatkan URL publik untuk gambar PNG
         let { data, error } = await supabase
             .storage
-            .from('avatars')
+            .from(bucket)
             .createSignedUrl(`${userId}.png`, 800000);
 
         if (error) {
             // Jika gambar PNG tidak ditemukan, mencoba mendapatkan URL publik untuk gambar JPG
             ({ data, error } = await supabase
                 .storage
-                .from('avatars')
+                .from(bucket)
                 .createSignedUrl(`${userId}.jpg`, 800000));
 
             if (error) {
                 // Jika gambar JPG tidak ditemukan, mencoba mendapatkan URL publik untuk gambar JPEG
                 ({ data, error } = await supabase
                     .storage
-                    .from('avatars')
+                    .from(bucket)
                     .createSignedUrl(`${userId}.jpeg`, 8000000));
 
                 if (error) {
@@ -94,9 +94,46 @@ export const loadImage = async (setImage, userId) => {
         console.log("Public URL:", data.signedUrl);
         setImage({ uri: data.signedUrl });
     } catch (error) {
-        console.error("Error fetching image:", error.message);
+        console.log("Error fetching image:", error.message);
     }
 };
+
+export const getImage = async (id, bucket = 'avatars') => {
+    try {
+        // Mencoba mendapatkan URL publik untuk gambar PNG
+        let { data, error } = await supabase
+            .storage
+            .from(bucket)
+            .createSignedUrl(`${id}.png`, 8000);
+
+        if (error) {
+            // Jika gambar PNG tidak ditemukan, mencoba mendapatkan URL publik untuk gambar JPG
+            ({ data, error } = await supabase
+                .storage
+                .from(bucket)
+                .createSignedUrl(`${id}.jpg`, 8000));
+
+            if (error) {
+                // Jika gambar JPG tidak ditemukan, mencoba mendapatkan URL publik untuk gambar JPEG
+                ({ data, error } = await supabase
+                    .storage
+                    .from(bucket)
+                    .createSignedUrl(`${id}.jpeg`, 8000));
+
+                if (error) {
+                    console.log("Error: No image found");
+                    return {uri: ''};
+                }
+            }
+        }
+        // Menggunakan URL publik yang diperoleh
+        console.log("Public URL:", data.signedUrl);
+        return { uri: data.signedUrl };
+    } catch (error) {
+        console.error("Error fetching image:", error.message);
+        return {uri: ''};
+    }
+}
 
 export const getUserAvatarURI = async (userId) => {
     try {

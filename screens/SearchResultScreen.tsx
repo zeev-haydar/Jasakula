@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, BackHandler } from 'react-native'
+import { View, Text, StyleSheet, Image, BackHandler, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Stack } from 'expo-router'
@@ -103,7 +103,7 @@ const SearchResultScreen = () => {
         <View style={styles.container}>
             
             <StackHeader title={`${title ? title : query}`}/>
-            <View style={styles.content}>
+            <ScrollView style={styles.content}>
 
                 {category === 'true' ? (
                     <View>
@@ -133,6 +133,7 @@ const SearchResultScreen = () => {
                                 const jasa = item.jasa;
                                 if (jasa) {
                                     return (
+                                        <>
                                         <SearchResultCardWithLink
                                             key={index}
                                             id={jasa.id}
@@ -141,10 +142,14 @@ const SearchResultScreen = () => {
                                             rating={Math.round(jasa.rating*100)/100}
                                             harga={jasa.harga}
                                         />
+                                        </>
+                                        
+                                        
                                     );
                                 }
                             } else {
                                 return (
+                                    <>
                                     <SearchResultCardWithLink
                                         key={index}
                                         id={item.id}
@@ -153,6 +158,8 @@ const SearchResultScreen = () => {
                                         rating={item.rating}
                                         harga={item.harga}
                                     />
+                                    </>
+                                    
                                 );
                             }
                             return null;
@@ -160,7 +167,7 @@ const SearchResultScreen = () => {
                     )}
                 </View>
 
-            </View>
+            </ScrollView>
 
         </View>
     )

@@ -13,6 +13,7 @@ import { supabase } from '@/utils/supabase';
 import { checkChatExistence, createChatWithUser } from '@/utils/fetch';
 import { useAuth } from '@/providers/AuthProvider';
 import { useChatContext } from '@/providers/chat_provider';
+import ImageLoader from '@/components/ImageLoader';
 
 const JasaScreen = () => {
     const [data, setData] = useState(null);
@@ -125,7 +126,7 @@ const JasaScreen = () => {
                     <View style={[styles.stackContainer, { height: imageHeight }]}>
                         <StackView>
                             <View style={[styles.imageContainer, { height: imageHeight, width: screenWidth }]}>
-                                <Image source={imagePath} style={styles.image} resizeMode='cover' />
+                                <ImageLoader id={slug} style={styles.image} />
                             </View>
                             <Button onPress={() => { router.back(); changeJasa(null); }} style={styles.button}>
                                 <FontAwesomeIcon icon={faArrowLeft} color='#fff' size={20} style={{ justifyContent: 'center', }} />

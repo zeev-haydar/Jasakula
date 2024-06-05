@@ -1,4 +1,4 @@
-import { ImageSourcePropType, Pressable, StyleSheet, Text, View } from 'react-native'
+import { ImageSourcePropType, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import SearchResultCard from './SearchResultCard'
 import Jasa from '@/models/Jasa'
@@ -15,10 +15,11 @@ const SearchResultCardWithLink: React.FC<{id:string, nama: string, rating: numbe
       }
     }
       asChild
+      style={{marginBottom: 15,}}
     >
-      <Pressable>
-        <SearchResultCard nama={nama} harga={harga} rating={rating} source={source} />
-      </Pressable>
+      <TouchableOpacity style={{flex: 1,  width: '100%'}} activeOpacity={0.6} >
+        <SearchResultCard id={id} nama={nama} harga={harga} rating={rating} source={source} />
+      </TouchableOpacity>
     </Link>
   )
 }

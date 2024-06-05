@@ -2,13 +2,14 @@ import { StyleSheet, Text, View, Image, ImageSourcePropType } from 'react-native
 import React from 'react'
 import Jasa from '@/models/Jasa'
 import { formatPrice } from '@/utils/formatting'
+import ImageLoader from './ImageLoader'
 
 
-const SearchResultCard: React.FC<{ nama: string, rating: number, harga: number, source: ImageSourcePropType }> = ({nama, rating, harga, source }) => {
+const SearchResultCard: React.FC<{id:string,  nama: string, rating: number, harga: number, source: ImageSourcePropType }> = ({id, nama, rating, harga, source }) => {
     return (
         <View style={styles.container}>
             <View style={styles.image_container}>
-                <Image source={source} style={styles.image} resizeMode='cover' />
+                <ImageLoader id={id} style={styles.image} />
             </View>
             <View style= {styles.information}>
                 <Text style={[styles.text, {fontWeight: '700'}]}>{nama}</Text>

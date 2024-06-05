@@ -99,7 +99,7 @@ const ProfileScreen = () => {
         <View style={styles.textContainer}>
           <Text style={{ fontSize: 20, fontFamily: 'DMSans_700Bold', paddingBottom: 24, borderBottomWidth: 0.3, borderBottomColor: "#CFCECE" }}>Jasakula</Text>
           <Link asChild href={"/profile/info"}>
-            <TouchableOpacity style={{flex: 0}}>
+            <TouchableOpacity style={{ flex: 0 }}>
               <View style={styles.menuText}>
                 <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
                   <FontAwesomeIcon icon={faUser} style={{ marginRight: 8 }} color='#CCC' />
@@ -111,7 +111,7 @@ const ProfileScreen = () => {
             </TouchableOpacity>
 
           </Link>
-          <View style={styles.bordernya}/>
+          <View style={styles.bordernya} />
 
           <View style={styles.menuText}>
             <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
@@ -121,21 +121,24 @@ const ProfileScreen = () => {
             <Text style={[styles.text, styles.lebihDariSymbol]}>{">"}</Text>
 
           </View>
-          <View style={styles.bordernya}/>
-          {isSeller && <Link asChild href={"/profile/jasa"}>
-            <TouchableOpacity style={{ flex: 0 }}>
-              <View style={styles.menuText}>
+          <View style={styles.bordernya} />
+          {isSeller && <>
+            <Link asChild href={"/profile/jasa"}>
+              <TouchableOpacity style={{ flex: 0 }}>
+                <View style={styles.menuText}>
 
-                <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
-                  <FontAwesomeIcon icon={faHammer} style={{ marginRight: 8 }} color='#CCC' />
-                  <Text style={[{ fontSize: 15, }, styles.text]}>Jasaku</Text>
+                  <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
+                    <FontAwesomeIcon icon={faHammer} style={{ marginRight: 8 }} color='#CCC' />
+                    <Text style={[{ fontSize: 15, }, styles.text]}>Jasaku</Text>
+                  </View>
+                  <Text style={[styles.text, styles.lebihDariSymbol]}>{">"}</Text>
+
+
                 </View>
-                <Text style={[styles.text, styles.lebihDariSymbol]}>{">"}</Text>
-
-
-              </View>
-            </TouchableOpacity>
-          </Link>}
+              </TouchableOpacity>
+            </Link>
+            <View style={styles.bordernya} /></>
+          }
           <Pressable onPress={handleLogout}>
             <View style={styles.menuText}>
               <View style={[{ flexDirection: 'row', paddingVertical: 16, },]}>
@@ -145,7 +148,7 @@ const ProfileScreen = () => {
               <Text style={[styles.text, styles.lebihDariSymbol]}>{">"}</Text>
             </View>
           </Pressable>
-          <View style={styles.bordernya}/>
+          <View style={styles.bordernya} />
 
 
         </View>

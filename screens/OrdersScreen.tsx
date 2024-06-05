@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, FlatList, Image } from 'react-native';
 import { supabase } from '../utils/supabase';
-import { Button } from 'react-native-paper';
+import { Button, TouchableRipple } from 'react-native-paper';
 import { useAuth } from '@/providers/AuthProvider';
 import { DMSans_400Regular, DMSans_500Medium, DMSans_700Bold } from '@expo-google-fonts/dm-sans';
 import { formatPrice } from '@/utils/formatting';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import StackHeader from '@/components/StackHeader';
+import { useRouter } from 'expo-router';
 
 const App = () => {
+  const router = useRouter();
   const auth = useAuth();
   const [items1, setItems1] = useState([]);
   const [items2, setItems2] = useState([]);
@@ -104,7 +107,8 @@ const App = () => {
 
 
   const renderItem = ({ item }) => (
-      <View style={styles.card}>
+    <TouchableRipple style={styles.card} onPress={() => router.navigate("/orders/" + item.id)} rippleColor={'#71bfd122'}>
+      <>
         <View style={styles.imageContainer}>
           <Image
             source={{ uri: item?.jasa?.url_gambar?.length > 0 ? item?.jasa?.url_gambar : 'https://www.youngontop.com/wp-content/uploads/2023/10/elephant-amboseli-national-park-kenya-africa.jpg' }}
@@ -118,7 +122,9 @@ const App = () => {
             <Text style={[styles.alignBottomText, { color: '#71BFD1' }]}>Rp{formatPrice(item.cost)}</Text>
           </View>
         </View>
-      </View>
+      </>
+
+    </TouchableRipple>
   );
 
 
@@ -139,11 +145,10 @@ const App = () => {
 
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
+      <StackHeader title={"Pesanan dan Permintaan"} />
       <View style={{ backgroundColor: '#fff', flex: 1 }}>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>Pesanan dan Permintaan</Text>
-        </View>
+
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 5 }}>
           <TouchableOpacity style={[styles.buttonContainer]} onPress={() => { setMenu1("Pesanan") }}>
             <Text style={[styles.buttonText, { color: lineColor1 }]}>Pesanan</Text>
@@ -158,13 +163,13 @@ const App = () => {
         </View>
         <View style={[{ marginTop: 15, flexDirection: 'row', justifyContent: 'space-around', }]} >
           <Button style={[styles.button, { backgroundColor: buttonColor1, }]}
-            contentStyle={{ justifyContent: 'center', alignItems: 'center' }}
+            contentStyle={{ alignItems: 'center' }}
             labelStyle={[styles.buttonText, { fontSize: 15, color: textColor1, width: '100%' }]}
             onPress={() => { setMenu2("Aktif") }}>
             <Text>Aktif</Text>
           </Button>
           <Button style={[styles.button, { backgroundColor: buttonColor2, }]}
-            contentStyle={{ justifyContent: 'center', alignItems: 'center' }}
+            contentStyle={{ alignItems: 'center' }}
             labelStyle={[styles.buttonText, { fontSize: 15, color: textColor2, width: '100%' }]}
             onPress={() => { setMenu2("Selesai") }}>
             <Text >Selesai</Text>
@@ -179,7 +184,7 @@ const App = () => {
         />
       </View>
 
-    </SafeAreaView>
+    </View>
   );
 };
 
