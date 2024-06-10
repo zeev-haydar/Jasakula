@@ -1,4 +1,4 @@
-import { Slot } from "expo-router";
+import { Slot, Stack } from "expo-router";
 import { CategoryProvider } from "../providers/CategoryProvider";
 import { SafeAreaView } from "react-native-safe-area-context"
 import { JasaProvider } from "@/providers/JasaProvider";
@@ -30,9 +30,9 @@ export default function AppLayout() {
                         <JasaProvider>
                             <ChatProvider>
                                 <OrderProvider>
-                                    <Slot />
+                                    <Slot/>
                                 </OrderProvider>
-                            </ChatProvider>
+                            </ChatProvider> 
                         </JasaProvider>
                     </CategoryProvider>
                 </OrderProvider>

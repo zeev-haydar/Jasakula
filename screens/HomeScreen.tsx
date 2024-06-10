@@ -50,18 +50,18 @@ export default function HomeScreen() {
   );
 
   const itemData = [
-    { id: 1, title: 'Web Dev' },
-    { id: 2, title: 'UI/UX' },
-    { id: 3, title: 'Frontend Dev' },
-    { id: 4, title: 'Backend Dev' },
-    { id: 5, title: 'Software Engineering' },
-    { id: 6, title: 'ML Engineer' },
+    { id: 1, title: 'Web Dev', image: {uri:"https://media.licdn.com/dms/image/C4D12AQEvUlAtPPxQUQ/article-cover_image-shrink_720_1280/0/1612913493353?e=2147483647&v=beta&t=KoB3EPx2lMckpRPZ7tpcUECYSSNn8BUaLf_HZ7m9rf0"} },
+    { id: 2, title: 'UI/UX', image:{uri:"https://arek.its.ac.id/hmsi/wp-content/uploads/2024/01/pasted-image-0-5.png"} },
+    { id: 3, title: 'Frontend Dev', image:{uri:"https://codedamn.com/assets/images/learnpaths/og/frontend.png"} },
+    { id: 4, title: 'Backend Dev', image:{uri:"https://miro.medium.com/v2/resize:fit:1400/1*qgUU5Bsw_aijAPHiaMnCng.png"} },
+    { id: 5, title: 'Software Engineering',  image:{uri:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSA9Uu8oCSlbD2PcTtU0r0qdV6q7_dCJLDmVw&s"}  },
+    { id: 6, title: 'ML Engineer',  image:{uri:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZScb3haMa2nDLb-2eVcipDsVzW0R_CbFvzQ&s"}  },
   ]
 
   const renderItem = ({ item }) => {
     return (
       <View style={styles.item}>
-        <HomeCard title={item.title} />
+        <HomeCard title={item.title} source={item.image} />
       </View>
     )
   }

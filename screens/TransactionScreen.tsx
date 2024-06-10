@@ -63,7 +63,7 @@ const TransactionScreen = () => {
             const { order, transaksi } = await new QRISMock(
                 userId,
                 jasa.jasa.penjual.pengguna.id,
-                jasa.jasa.harga * 1.1,
+                Math.round(jasa.jasa.harga * 1.1),
                 jasa.jasa.id
             ).Pay();
 
@@ -88,7 +88,7 @@ const TransactionScreen = () => {
                         <Text style={[GenericStyles.mainFontBold, { fontSize: 20, marginBottom: 20 }]}>Pilih Metode Pembayaran</Text>
                         {daftarMetodePembayaran.map((item, index) => {
                             return (<>
-                                <TouchableOpacity onPress={() => { setMetodePembayaran(item); hideModalMethodPembayaran(); }}>
+                                <TouchableOpacity key={index} onPress={() => { setMetodePembayaran(item); hideModalMethodPembayaran(); }}>
                                     <Text key={index} style={GenericStyles.mainFont}>{item}</Text>
                                 </TouchableOpacity>
 
@@ -154,7 +154,7 @@ const TransactionScreen = () => {
                                 Total Harga
                             </Text>
                             <Text style={[GenericStyles.mainFontBold, { fontSize: 16 }]}>
-                                Rp{formatPrice(jasa.jasa.harga * 1.1)}
+                                Rp{formatPrice(Math.round(jasa.jasa.harga * 1.1))}
                             </Text>
                         </View>
                     </View>

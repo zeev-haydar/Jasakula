@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, AppState, Image, TextInput, KeyboardAvoidingView, Platform, Alert, ScrollView, Keyboard, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, AppState, Image, TextInput, KeyboardAvoidingView, Platform, Alert, ScrollView, Keyboard, TouchableOpacity, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { supabase } from '@/utils/supabase'
@@ -84,6 +84,12 @@ const LoginScreen = () => {
         ref={scrollViewRef}
 
       >
+        {loading && (
+            <View style={styles.overlay}>
+              <View style={styles.overlayBackground} />
+              <ActivityIndicator size="large" color="#fff" />
+            </View>
+          )}
         <KeyboardAvoidingView
           style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center' }}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}

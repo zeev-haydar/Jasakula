@@ -31,6 +31,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    if (!auth.session) return;
     console.log(auth.session?.user.id)
   }, [auth.session?.user.id]);
 
@@ -70,7 +71,7 @@ const App = () => {
   const fetchItems3 = async () => {
     const { data, error } = await supabase
       .from('order')
-      .select('* jasa: jasa_id(id, nama, deskripsi, url_gambar)')
+      .select('*, jasa: jasa_id(id, nama, deskripsi, url_gambar)')
       .eq('penjual_pengguna_id', auth.session?.user.id)
       .eq('waktu', 'Aktif')
 

@@ -1,17 +1,27 @@
-import { View, Text, Image, StyleSheet } from 'react-native'
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native'
 import React from 'react'
+import { TouchableRipple } from 'react-native-paper'
+import { useRouter } from 'expo-router'
 
-const HomeCard = ({ title }) => {
+const HomeCard = ({ title, source = require('../assets/images/placeholder.png') }) => {
+
+    const router = useRouter()
+
+    const handlePressCard = (title) => {
+        router.navigate({pathname:`/search/search_result`, params: {query: title, category: 'false'}})
+    }
     return (
-        <View style={styles.container}>
-            <Image
-                style={{ width: 80, height: 80 }}
-                source={require('../assets/images/placeholder.png')}
-            />
-            <Text style={styles.title}>
-                {title}
-            </Text>
-        </View>
+        <TouchableOpacity style={styles.container} onPress={()=>handlePressCard(title)}>
+                <Image
+                    style={{ width: 80, height: 80 }}
+                    source={source}
+                />
+                <Text style={styles.title}>
+                    {title}
+                </Text>
+
+        </TouchableOpacity>
+
     )
 }
 

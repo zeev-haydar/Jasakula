@@ -54,6 +54,14 @@ const SearchResultScreen = () => {
                                 name
                             )`).eq("kategori.name", query);
                 } else {
+                    let wildcardQuery: string;
+                    const queryWords = (query as string).split(' ');
+                    console.log(queryWords) 
+                    if (queryWords.length <= 1) { 
+                        wildcardQuery = `nama.ilike.%${query}%,deskripsi.ilike.%${query}%`
+                    } else {
+                        wildcardQuery = queryWords.map(word => `nama.ilike.%${word}%,deskripsi.ilike.%${word}%,jenis.ilike.%${word}%`).join(',');
+                    }
                     response = await supabase
                         .from('jasa')
                         .select(`
@@ -64,7 +72,7 @@ const SearchResultScreen = () => {
                             deskripsi,
                             url_gambar
                         `)
-                        .or(`nama.ilike.%${query}%,deskripsi.ilike.%${query}%`);
+                        .or(wildcardQuery);
                 }
                 if (response.error) {
                     console.log(response.error)
