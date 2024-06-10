@@ -16,14 +16,28 @@ const EditJasaScreen = () => {
     const { uri } = await getImage(itemId, 'images');
     return uri;
   }
+
+  const fetchUri2 = (itemId) => {
+    const {data} = supabase.storage.from('images').getPublicUrl(itemId)
+    return data.publicUrl
+  }
   
 
   const ImageLoader = ({ item }) => {
     const [uriImage, setUriImage] = useState('');
 
     useEffect(() => {
-      const loadUri = async () => {
-        const uri = await fetchUri(item.id);
+      /* this is for signed uri image */
+      // const loadUri = async () => {
+      //   const uri = await fetchUri(item.id);
+      //   setUriImage(uri);
+      // }
+      const loadUri = () => {
+        if (item.url_gambar.length > 0) {
+          setUriImage(item.url_gambar);
+          return;
+        }
+        const uri = fetchUri2(item.id);
         setUriImage(uri);
       }
       loadUri();

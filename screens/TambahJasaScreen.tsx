@@ -68,7 +68,18 @@ const TambahJasaScreen = () => {
                     setLoadingSubmit(false);
                     return;
                 }
-                console.log("apalah")
+
+                // add url_gambar with newly created image
+                const imageFetched = await getImageFromSupabase(data.id)
+                const {error: imageLoadError} = await supabase.from("jasa").update({
+                    url_gambar: imageFetched
+                }).eq("id", data.id)
+
+                if (imageLoadError) {
+                    // Alert.alert("Error inserting data:", imageLoadError.message);
+                    console.log(imageLoadError)
+                    throw imageLoadError
+                }
                 Alert.alert("Data berhasil disimpan!");
                 setNama('');
                 setKategori('');
@@ -78,7 +89,7 @@ const TambahJasaScreen = () => {
                 router.replace('/profile')
             }
         } catch (error) {
-            Alert.alert("Error handling data:", error.message);
+            Alert.alert("Error handling data:", error?.message && 'pokoknya error');
         } finally {
             setLoadingSubmit(false);
         }
@@ -131,7 +142,16 @@ const TambahJasaScreen = () => {
         fetchData()
     }, []);
 
-
+    const getImageFromSupabase = async (image) => {
+    
+        const { data: imageData} = supabase.storage.from('images').getPublicUrl(image);
+    
+        if (imageData.publicUrl.length === 0) {
+            throw Error("Image not found");
+        }
+    
+        return imageData.publicUrl;
+    };
 
     return (
 
@@ -189,7 +209,7 @@ const TambahJasaScreen = () => {
 
                             </View>
                             <Text style={{ marginVertical: 10 }}>
-                                Katagori
+                                Kategori
                             </Text>
                             <TextInput
                                 placeholder="Kategori"

@@ -45,42 +45,42 @@ const SearchScreen = () => {
                         <CategoryElementWithLink
                             source={require('@/assets/images/icons8-video-100.png')}
                             title={"Video Editing"}
-                            description={"Modeling, animasi, texturing, rigging, pencahayaan, rendering, compositing."}
+                            description={"After Effect, Premiere Pro, Sony Vegas Pro, Sony Vegas Noob, Capcut, Jedag Jedug Tiktok."}
                         />
                         <CategoryElementWithLink
                             source={require('@/assets/images/icons8-google-code-500.png')}
                             title={"Web Development"}
-                            description={"Modeling, animasi, texturing, rigging, pencahayaan, rendering, compositing."}
+                            description={"Front-end Developer, Back-end Developer, Center-end Developer, Software Engineer, DevOps Engineer."}
                         />
                         <CategoryElementWithLink
                             source={require('@/assets/images/icons8-wacom-tablet-100.png')}
                             title={"Desain Logo"}
-                            description={"Modeling, animasi, texturing, rigging, pencahayaan, rendering, compositing."}
+                            description={"Create a logo design for personal use or commercial use."}
                         />
                         <CategoryElementWithLink
                             source={require('@/assets/images/icons8-exhibitor-100.png')}
                             title={"Digital Marketing"}
-                            description={"Modeling, animasi, texturing, rigging, pencahayaan, rendering, compositing."}
+                            description={"If you like buggati and want to get rich? you can check freelancer here."}
                         />
                         <CategoryElementWithLink
                             source={require('@/assets/images/icons8-cash-in-hand-100.png')}
                             title={"Akuntansi & Keuangan"}
-                            description={"Modeling, animasi, texturing, rigging, pencahayaan, rendering, compositing."}
+                            description={"Kamu miskin karena suami anda main judi online? tingkatkan kesadaran keunganan keluarga melalui layanan ini."}
                         />
                         <CategoryElementWithLink
                             source={require('@/assets/images/icons8-multiple-devices-100.png')}
                             title={"Servis Barang Elektronik"}
-                            description={"Modeling, animasi, texturing, rigging, pencahayaan, rendering, compositing."}
+                            description={"AC Rusak, Kulkas Rusak, Kipas Rusak, TV Rusak? bisa cari servis di sini. Tidak melayani kemalingan."}
                         />
                         <CategoryElementWithLink
                             source={require('@/assets/images/icons8-yoga-100.png')}
                             title={"Gaya Hidup"}
-                            description={"Modeling, animasi, texturing, rigging, pencahayaan, rendering, compositing."}
+                            description={"Get a better life style"}
                         />
                         <CategoryElementWithLink
                             source={require('@/assets/images/icons8-consultation-100.png')}
                             title={"Jasa Konsultasi"}
-                            description={"Modeling, animasi, texturing, rigging, pencahayaan, rendering, compositing."}
+                            description={"You can consult here"}
                         />
                     </View>
                 </ScrollView>
@@ -115,8 +115,7 @@ const styles = StyleSheet.create({
 
     },
     category_text: {
-        fontFamily: 'DM-Sans',
-        fontWeight: '700',
+        fontFamily: 'DMSans_700Bold',
         color: '#fff',
         fontSize: 25,
         paddingTop: 10,

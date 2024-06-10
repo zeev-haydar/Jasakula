@@ -46,7 +46,9 @@ const SearchResultScreen = () => {
                                 id,
                                 harga,
                                 rating,
-                                nama
+                                nama,
+                                deskripsi,
+                                url_gambar
                             ),
                             kategori!inner(
                                 name
@@ -59,7 +61,8 @@ const SearchResultScreen = () => {
                             harga,
                             rating,
                             nama,
-                            deskripsi
+                            deskripsi,
+                            url_gambar
                         `)
                         .or(`nama.ilike.%${query}%,deskripsi.ilike.%${query}%`);
                 }
@@ -133,32 +136,28 @@ const SearchResultScreen = () => {
                                 const jasa = item.jasa;
                                 if (jasa) {
                                     return (
-                                        <>
                                         <SearchResultCardWithLink
                                             key={index}
                                             id={jasa.id}
-                                            source={require('@/assets/images/placeholder-design.png')}
+                                            source={(jasa?.url_gambar && jasa.url_gambar.length > 0) ? {uri: jasa.url_gambar}  : require('@/assets/images/placeholder-design.png')}
                                             nama={jasa.nama}
                                             rating={Math.round(jasa.rating*100)/100}
                                             harga={jasa.harga}
                                         />
-                                        </>
                                         
                                         
                                     );
                                 }
                             } else {
                                 return (
-                                    <>
                                     <SearchResultCardWithLink
                                         key={index}
                                         id={item.id}
-                                        source={require('@/assets/images/placeholder-design.png')}
+                                        source={(item?.url_gambar && item.url_gambar.length > 0) ? {uri: item.url_gambar}  : require('@/assets/images/placeholder-design.png')}
                                         nama={item.nama}
                                         rating={item.rating}
                                         harga={item.harga}
                                     />
-                                    </>
                                     
                                 );
                             }
@@ -166,7 +165,7 @@ const SearchResultScreen = () => {
                         })
                     )}
                 </View>
-
+                    <View style={{height: 50}}/>
             </ScrollView>
 
         </View>
@@ -192,8 +191,8 @@ const styles = StyleSheet.create({
         // justifyContent: 'center',
         flexDirection: 'column',
         // marginTop: 95,
-        marginLeft: 17,
-        marginRight: 17,
+        paddingLeft: 17,
+        paddingRight: 17,
         paddingTop: 25,
 
     },

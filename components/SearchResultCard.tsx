@@ -9,7 +9,7 @@ const SearchResultCard: React.FC<{id:string,  nama: string, rating: number, harg
     return (
         <View style={styles.container}>
             <View style={styles.image_container}>
-                <ImageLoader id={id} style={styles.image} />
+                <Image source={source} style={styles.image} />
             </View>
             <View style= {styles.information}>
                 <Text style={[styles.text, {fontWeight: '700'}]}>{nama}</Text>

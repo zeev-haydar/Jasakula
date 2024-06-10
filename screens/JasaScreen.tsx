@@ -83,6 +83,10 @@ const JasaScreen = () => {
             router.navigate('/login');
         }
         let chatMemberId:string;
+        if (data.penjual?.pengguna?.id === auth?.session?.user?.id) {
+            Alert.alert("Tindakan aneh","Kamu ga bisa ngajak chat dirimu sendiri");
+            return;
+        }
         const {exist, chat_member_id} = await checkChatExistence(auth?.session?.user?.id, data.penjual?.pengguna?.id);
         if (!exist) {
             const {data: chatData, error} = await createChatWithUser(auth?.session?.user?.id, data.penjual?.pengguna?.id);
@@ -126,7 +130,7 @@ const JasaScreen = () => {
                     <View style={[styles.stackContainer, { height: imageHeight }]}>
                         <StackView>
                             <View style={[styles.imageContainer, { height: imageHeight, width: screenWidth }]}>
-                                <ImageLoader id={slug} style={styles.image} />
+                                <Image style={styles.image} source={{uri: data.url_gambar}} />
                             </View>
                             <Button onPress={() => { router.back(); changeJasa(null); }} style={styles.button}>
                                 <FontAwesomeIcon icon={faArrowLeft} color='#fff' size={20} style={{ justifyContent: 'center', }} />

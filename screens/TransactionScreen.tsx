@@ -9,6 +9,7 @@ import { Button, Modal, Portal, PaperProvider } from 'react-native-paper'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 import { QRISMock } from '@/mocks/payment_gatemay_mock'
+import { useAuth } from '@/providers/AuthProvider'
 
 const TransactionScreen = () => {
     const router = useRouter();
@@ -23,12 +24,14 @@ const TransactionScreen = () => {
     const showModalQRIS = () => setModalQRISVisible(true);
     const hideModalQRIS = () => setModalQRISVisible(false);
 
+    const auth = useAuth();
+    const jasa = useJasa();
+
     const url = 'https://www.youtube.com/shorts/voyW4IdAIwE';
     // Encoded URL
     const encodedUrl = encodeURIComponent(url);
 
 
-    const jasa = useJasa();
     const daftarMetodePembayaran = [
         "Qris",
         "BCA Virtual Account",
@@ -50,10 +53,30 @@ const TransactionScreen = () => {
         showModalQRIS();
     }
 
-    const handleQRIS = () => {
-        const success:boolean = new QRISMock().Pay("1212412512512", "1251112491801");
-        if (success) {
+    const handleQRIS = async () => {
+        try {
+            const userId = auth.session?.user?.id;
+            if (!userId) {
+                throw new Error("User ID is not available");
+            }
+
+            const { order, transaksi } = await new QRISMock(
+                userId,
+                jasa.jasa.penjual.pengguna.id,
+                jasa.jasa.harga * 1.1,
+                jasa.jasa.id
+            ).Pay();
+
+            if (!order || !transaksi) {
+                Alert.alert("Transaction Error", "Transaksi Gagal, error dari server");
+                return;
+            }
+
+            Alert.alert("Sukses", "Pembayaran berhasil");
             router.navigate("/home");
+        } catch (error) {
+            console.error("Error processing payment:", error);
+            Alert.alert("Error", "Terjadi kesalahan saat memproses pembayaran. Silakan coba lagi.");
         }
     }
     return (
@@ -80,7 +103,7 @@ const TransactionScreen = () => {
                         <Text style={[GenericStyles.mainFont, { fontSize: 20, paddingBottom: 8 }]}>QR Code</Text>
                         <Text style={[GenericStyles.mainFont, { fontSize: 10, color: '#A3A3A3' }]}>Mohon selesaikan transaksi sebelum waktu yang ditentukan. Anda bisa melihat QR code kembali di menu order</Text>
                         <Image source={{ uri: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodedUrl}` }} style={{ alignSelf: 'center', marginVertical: 20 }} height={150} width={150} />
-                        <Button style={styles.nextButton} contentStyle={{ width: '100%' }} labelStyle={{ width: '100%' }} onPress={() =>  handleQRIS()}>
+                        <Button style={styles.nextButton} contentStyle={{ width: '100%' }} labelStyle={{ width: '100%' }} onPress={handleQRIS}>
                             <Text style={[GenericStyles.mainFont, { fontSize: 10, color: '#fff', fontWeight: 'bold' }]}>OK</Text>
                         </Button>
                     </Modal>

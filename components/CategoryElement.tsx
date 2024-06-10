@@ -46,8 +46,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
-    fontFamily: 'DM-Sans',
+    fontFamily: 'DMSans_700Bold',
   },
   textContainer: {
     flexWrap: 'wrap',

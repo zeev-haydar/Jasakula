@@ -45,4 +45,18 @@ function getTimeOnClock(timestamptz: string) {
   return `${formattedHours}:${formattedMinutes}`
 }
 
-export { formatPrice, printAllElements, formatWithDate, getTimeOnClock }
+function truncateText(text, limit){
+  const words = text.split(' ');
+  if (words.length > limit) {
+    return words.slice(0, limit).join(' ') + '...';
+  }
+  return text;
+};
+
+export function addDaysToDate(date, days){
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+};
+
+export { formatPrice, printAllElements, formatWithDate, getTimeOnClock, truncateText }

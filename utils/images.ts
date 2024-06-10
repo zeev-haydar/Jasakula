@@ -47,6 +47,56 @@ export const handleSaveImage = async (image, userId, bucket='avatars') => {
     }
 };
 
+export const handleSaveImageButReturnPublicUrl = async (image, userId, bucket='avatars') => {
+    if (!image) {
+        return "Mana gambarnya?";
+        Alert.alert("Mana gambarnya?");
+        
+    } else {
+        if (image.uri) {
+            return null;
+        }
+    }
+
+    try {
+        const uri = image.assets[0].uri;
+        const response = await fetch(uri);
+        const imageBlob = await response.blob();
+
+        const mimeType = image.assets[0].mimeType;
+        const extension = mimeType.split('/')[1];
+        const filePath = `${userId}.${extension}`;
+
+        const metadata = {
+            contentType: mimeType,
+            upsert: true
+        };
+
+        const arrayBuffer = await new Response(imageBlob).arrayBuffer();
+
+        const { data, error } = await supabase.storage
+            .from(bucket)
+            .upload(filePath, arrayBuffer, metadata);
+
+        if (error) {
+            throw Error(error.message)
+            Alert.alert("Error uploading image:", error.message);
+            
+        } else {
+            const { data } = supabase.storage
+                .from(bucket)
+                .getPublicUrl(filePath);
+
+
+
+            return data.publicUrl;
+            Alert.alert("Image uploaded successfully:");
+        }
+    } catch (error) {
+        Alert.alert("Error handling image:", error.message);
+    }
+};
+
 export const pickImage = async (setImage) => {
     let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -85,7 +135,7 @@ export const loadImage = async (setImage, userId, bucket='avatars') => {
                     .createSignedUrl(`${userId}.jpeg`, 8000000));
 
                 if (error) {
-                    console.error("Error: No image found");
+                    console.log("Error: No image found");
                     return;
                 }
             }
@@ -158,7 +208,7 @@ export const getUserAvatarURI = async (userId) => {
             .createSignedUrl(`${userId}.jpeg`, 8000000));
   
           if (error) {
-            console.error("Error: No image found");
+            console.log("Error: No image found");
             return null;
           }
         }

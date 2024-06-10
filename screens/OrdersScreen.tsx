@@ -1,23 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, FlatList, Image } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, FlatList, Image, RefreshControl } from 'react-native';
 import { supabase } from '../utils/supabase';
 import { Button, TouchableRipple } from 'react-native-paper';
 import { useAuth } from '@/providers/AuthProvider';
 import { DMSans_400Regular, DMSans_500Medium, DMSans_700Bold } from '@expo-google-fonts/dm-sans';
-import { formatPrice } from '@/utils/formatting';
+import { formatPrice, printAllElements } from '@/utils/formatting';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import StackHeader from '@/components/StackHeader';
 import { useRouter } from 'expo-router';
+import { useOrder } from '@/providers/order_provider';
 
 const App = () => {
   const router = useRouter();
   const auth = useAuth();
+  const order = useOrder();
+
   const [items1, setItems1] = useState([]);
   const [items2, setItems2] = useState([]);
   const [items3, setItems3] = useState([]);
   const [items4, setItems4] = useState([]);
   const [menu1, setMenu1] = useState("Pesanan");
   const [menu2, setMenu2] = useState("Aktif");
+  const [refreshing, setRefreshing] = useState(false);
+
   useEffect(() => {
     fetchItems1();
     fetchItems2();
@@ -33,13 +38,15 @@ const App = () => {
   const fetchItems1 = async () => {
     const { data, error } = await supabase
       .from('order')
-      .select('id,tanggal, cost, waktu, jasa: jasa_id(id, nama, deskripsi, url_gambar)')
+      .select('*, jasa: jasa_id(id, nama, deskripsi, url_gambar)')
       .eq('pengguna_id', auth.session?.user.id)
       .eq("waktu", "Aktif");
     if (error) {
       console.error('Error fetching items:', error);
     } else {
       setItems1(data);
+      console.log("Data 1:\n");
+      // printAllElements(data);
 
     }
   };
@@ -47,13 +54,15 @@ const App = () => {
   const fetchItems2 = async () => {
     const { data, error } = await supabase
       .from('order')
-      .select('id,tanggal, cost, waktu, jasa: jasa_id(id, nama, deskripsi, url_gambar)')
+      .select('*, jasa: jasa_id(id, nama, deskripsi, url_gambar)')
       .eq('pengguna_id', auth.session?.user.id)
       .eq("waktu", "Selesai");
     if (error) {
       console.error('Error fetching items:', error);
     } else {
       setItems2(data)
+      console.log("Data 2:\n");
+      // printAllElements(data);
 
     }
   };
@@ -61,7 +70,7 @@ const App = () => {
   const fetchItems3 = async () => {
     const { data, error } = await supabase
       .from('order')
-      .select('id,tanggal, cost, waktu, jasa: jasa_id(id, nama, deskripsi, url_gambar)')
+      .select('* jasa: jasa_id(id, nama, deskripsi, url_gambar)')
       .eq('penjual_pengguna_id', auth.session?.user.id)
       .eq('waktu', 'Aktif')
 
@@ -70,6 +79,8 @@ const App = () => {
       console.error('Error fetching items:', error);
     } else {
       setItems3(data);
+      console.log("Data 3:\n");
+      // printAllElements(data);
 
 
     }
@@ -78,7 +89,7 @@ const App = () => {
   const fetchItems4 = async () => {
     const { data, error } = await supabase
       .from('order')
-      .select(' id,tanggal, cost, waktu, jasa: jasa_id(id, nama, deskripsi, url_gambar)')
+      .select('*, jasa: jasa_id(id, nama, deskripsi, url_gambar)')
       .eq('penjual_pengguna_id', auth.session?.user.id)
       .eq('waktu', 'Selesai')
 
@@ -87,8 +98,19 @@ const App = () => {
       console.error('Error fetching items:', error);
     } else {
       setItems4(data);
+      console.log("Data 4:\n");
+      // printAllElements(data);
 
     }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchItems1();
+    await fetchItems2();
+    await fetchItems3();
+    await fetchItems4();
+    setRefreshing(false);
   };
 
   const lineColor1 = menu1 === 'Pesanan' ? '#71BFD1' : '#C4C4C4';
@@ -105,14 +127,19 @@ const App = () => {
     return text;
   };
 
+  const handlePressOrder = (item) => {
+    order.changeOrder(item)
+    router.navigate("/orders/" + item.id)
+  }
+
 
   const renderItem = ({ item }) => (
-    <TouchableRipple style={styles.card} onPress={() => router.navigate("/orders/" + item.id)} rippleColor={'#71bfd122'}>
+    <TouchableRipple style={styles.card} onPress={()=>handlePressOrder(item)} rippleColor={'#71bfd122'}>
       <>
         <View style={styles.imageContainer}>
           <Image
             source={{ uri: item?.jasa?.url_gambar?.length > 0 ? item?.jasa?.url_gambar : 'https://www.youngontop.com/wp-content/uploads/2023/10/elephant-amboseli-national-park-kenya-africa.jpg' }}
-            style={styles.image}
+            style={styles.image} 
           />
         </View>
         <View style={styles.contentContainer}>
@@ -181,6 +208,9 @@ const App = () => {
           renderItem={renderItem}
           keyExtractor={item => item.id}
           contentContainerStyle={styles.orderList}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          }
         />
       </View>
 
