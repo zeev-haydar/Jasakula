@@ -20,9 +20,6 @@
     <li>
       <a href="#link-aplikasi">Link Aplikasi</a>
     </li>
-    <li>
-      <a href="#user-manual">User Manual</a>
-    </li>
   </ol>
 </details>
 
@@ -48,8 +45,4 @@ Dalam tim JasaKula dibagi menjadi 3 bagian, yaitu:
 ## Link Aplikasi
 Berikut tautan untuk mendownload aplikasi JasaKula:
 [Di sini](https://drive.google.com/file/d/1rkp9MMSTp9jONowstEo-k76oFpJWZup1/view?usp=sharing)
-
-## User Manual
-Berikut user manual dari aplikasi JasaKula.
-
 
